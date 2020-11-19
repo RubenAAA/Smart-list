@@ -31,6 +31,10 @@ class receipt_upload(FlaskForm):
     misc = StringField("Miscellaneous")
     submit_button = SubmitField("Submit")
 
+class Upload_product(FlaskForm):
+    product = StringField("Product", validators=[DataRequired()])
+    submit_button = SubmitField("Submit")
+
 
 """
 Advanced functionalities

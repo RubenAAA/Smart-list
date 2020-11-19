@@ -1,0 +1,120 @@
+body {
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  background-color: grey;
+}
+
+h1 {
+  color:yellow;
+  font-size:43;
+  font-family:"Courier New", Courier, monospace;
+  padding-top:22px;
+}
+
+p {
+    color:darkslategray;
+    background-color: ivory;
+    font-size: 13px;
+}
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: black;
+  color: white;
+  text-align: center;
+}
+
+.card {
+  display: block;
+  margin-left:70px;
+  margin-right:70px;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 20px;
+  border: 2px solid green;
+  background-color: #f2f2f2;
+}
+
+.card-overview {
+  text-align: center;
+}
+
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+
+}
+
+li {
+  float: left;
+  margin-left:1px;
+  margin-top:1px;
+
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+  background-color: #111;
+}
+.active {
+  background-color: black;
+}
+.logo-image{
+   width: 56px;
+   height: 56px;
+   border-radius: 5%;
+   overflow: hidden;
+   margin-top: -6px;
+}
+
+.btn primary {
+    background-color:grey;
+    color:black;
+}
+.facebook {
+    background-color: #3b5998;
+    color: #fff;
+    font-size: 18px;
+    padding-top: 5px;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer
+}
+
+.twitter {
+    background-color: #1DA1F2;
+    color: #fff;
+    font-size: 18px;
+    padding-top: 5px;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer
+}
+
+.linkedin {
+    background-color: #2867B2;
+    color: #fff;
+    font-size: 18px;
+    padding-top: 5px;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer
+}

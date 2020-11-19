@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
-from forms import RegistrationForm, LoginForm, receipt_upload
+from forms import RegistrationForm, LoginForm, receipt_upload, Upload_product
 # for advanced functionalities add following:
 # from forms import  receipt_upload, keyword, food_upload
 app = Flask(__name__)
@@ -68,7 +68,10 @@ class Receipts(db.Model, UserMixin):
 def index():
     # The smart shopping list
     # Placeholder
-    return False
+    form = Upload_product()
+
+
+    return render_template("index.html", form=form)
 
 
 @app.route("/upload-receipt")
@@ -194,6 +197,18 @@ def is_login_successful(form_data):
     else:
         return False
 
+
+def add_post(form_data):
+
+    posts = Posts(post_content=form_data.text.data,
+                  user_id=current_user.id
+                  )
+
+    db.session.add(posts)
+
+    db.session.commit()
+
+    return True
 
 if __name__ == "__main__":
     app.run(debug=True)

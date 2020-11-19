@@ -1,1 +1,32 @@
-<h1>index</h1>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='styles.css')}} href="css/yourStyles.css?<?php echo time(); ?>">
+    </head>
+
+    <body>
+        <h1>Shopping list</h1>
+        <h6>Type if you want to add something</h6>
+
+        <form  method="post">
+          {{ form.hidden_tag() }}
+
+          {{ form.product.label }} {{ form.product() }}
+          <b>
+          {{ form.submit_button() }}
+
+        </form>
+
+
+
+        <br><br>
+
+        <div class="footer">
+            <h6>Copyright 2020</h6>
+        </div>
+
+    </body>
+</html>
