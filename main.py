@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
-from forms import RegistrationForm, LoginForm, receipt_upload
+from forms import RegistrationForm, LoginForm, receipt_upload,  button_for_script
 # for advanced functionalities add following:
 # from forms import  receipt_upload, keyword, food_upload
 app = Flask(__name__)
@@ -32,6 +32,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     receipts = db.relationship("Receipts", backref="op", lazy=True)
+    items = db.relationship("Items", backref="opp", lazy=True)
 
     def __repr__(self):
         return f"User(id: '{self.id}', fname: '{self.fname}', " +\
@@ -64,11 +65,22 @@ class Receipts(db.Model, UserMixin):
                f" op: '{self.user_id}')"
 
 
+class Items(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, default=0)
+    item = db.Column(db.String(100), nullable=False)
+    date_created = db.Column(db.DateTime, nullable=False,
+                             default=datetime.datetime.now)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+
+
 @app.route("/")
 def index():
     # The smart shopping list
-    # Placeholder
-    return False
+    form = button_for_script()
+    if form.validate_on_submit():
+        attribute_session_id()
+    return render_template("index.html")
 
 
 @app.route("/upload-receipt")
@@ -193,6 +205,11 @@ def is_login_successful(form_data):
             return True
     else:
         return False
+
+
+def attribute_session_id():
+    Items.query.filter_by(user_id=current_user.id).session_id = Items.query.filter_by(
+        session_id != 0).order_by(Items.id.desc()).first().session_id + 1
 
 
 if __name__ == "__main__":

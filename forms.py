@@ -32,6 +32,10 @@ class receipt_upload(FlaskForm):
     submit_button = SubmitField("Submit")
 
 
+class button_for_script(FlaskForm):
+    submit_button = SubmitField("Submit")
+
+
 """
 Advanced functionalities
 
