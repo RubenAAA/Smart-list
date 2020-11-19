@@ -208,8 +208,10 @@ def is_login_successful(form_data):
 
 
 def attribute_session_id():
-    Items.query.filter_by(user_id=current_user.id).session_id = Items.query.filter_by(
-        session_id != 0).order_by(Items.id.desc()).first().session_id + 1
+    user_items = Items.query.filter_by(user_id=current_user.id).all()
+    user_unsubmitted_items = user_items.filter_by(session_id=0).all()
+    for items in user_unsubmitted_items:
+        items.session_id = Items.query.order_by(Items.session_id.desc()).first().session_id + 1
 
 
 if __name__ == "__main__":
