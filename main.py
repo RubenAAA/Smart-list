@@ -77,22 +77,19 @@ class Items(db.Model, UserMixin):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if current_user.is_authenticated:
-        items = pd.DataFrame()
+        items = get_items()
         form = button_for_script()
         form1 = button1_for_script()
 
         if form.validate_on_submit():
-            if add_item(form):
-                items = get_items()
-                flash("Posted")
-                return render_template("index.html", form=form, form1=form1,
-                                       items=items)
-
-            else:
-                flash("Message has more than 140 characters. Please shorten it")
+            add_item(form)
+            items = get_items()
+            return render_template("index.html", form=form, form1=form1,
+                                   items=items)
 
         if form1.validate_on_submit():
-            return redirect(url_for("index"))
+            items = get_popular_items()
+            return redirect(url_for("index", items=items))
 
         return render_template("index.html", form=form,
                                form1=form1, items=items)
@@ -246,12 +243,18 @@ def add_item(form_data):
     return product
 
 
-def get_items(session_id=0, number_of_items=5):
+def get_items(session_id=0):
     df = pd.read_sql(Items.query.statement, db.session.bind)
     current_df = df[df["user_id"] == current_user.id]
     current_df = current_df[current_df["session_id"] == session_id]
+    return current_df
+
+
+def get_popular_items(number_of_items=5):
+    df = pd.read_sql(Items.query.statement, db.session.bind)
+    current_df = df[df["user_id"] == current_user.id]
     top_n_list = current_df['item'].value_counts()[:number_of_items].index.tolist()
-    top_n_df = pd.DataFrame(top_n_list, columns=['items'])
+    top_n_df = pd.DataFrame(top_n_list, columns=['item'])
     return top_n_df
 
 
