@@ -73,6 +73,12 @@ class Items(db.Model, UserMixin):
                              default=datetime.datetime.now)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
+    def __repr__(self):
+        return f"Items(id: '{self.id}', session_id: '{self.session_id}', " +\
+               f" item: '{self.item}', " +\
+               f" date_created: '{self.date_created}', " +\
+               f" user_id: '{self.user_id}')"
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -89,7 +95,9 @@ def index():
 
         if form1.validate_on_submit():
             items = get_popular_items()
-            return redirect(url_for("index", items=items))
+            attribute_session_id()
+            return render_template("index.html", form=form, form1=form1,
+                                   items=items)
 
         return render_template("index.html", form=form,
                                form1=form1, items=items)
@@ -250,19 +258,22 @@ def get_items(session_id=0):
     return current_df
 
 
-def get_popular_items(number_of_items=5):
+def get_popular_items(num_of_items=5):
     df = pd.read_sql(Items.query.statement, db.session.bind)
     current_df = df[df["user_id"] == current_user.id]
-    top_n_list = current_df['item'].value_counts()[:number_of_items].index.tolist()
+    top_n_list = current_df['item'].value_counts()[:num_of_items].index.tolist()
     top_n_df = pd.DataFrame(top_n_list, columns=['item'])
     return top_n_df
 
 
 def attribute_session_id():
-    user_items = Items.query.filter_by(user_id=current_user.id).all()
-    user_unsubmitted_items = user_items.filter_by(session_id=0).all()
-    for items in user_unsubmitted_items:
-        items.session_id = Items.query.order_by(Items.session_id.desc()).first().session_id + 1
+    num_of_nuls = Items.query.filter_by(user_id=current_user.id).filter_by(session_id=0).count()
+    for i in range(0, num_of_nuls):
+        list_of_null_sids = Items.query.filter_by(
+            user_id=current_user.id).filter_by(session_id=0).first()
+        setattr(list_of_null_sids, 'session_id', Items.query.order_by(
+            Items.session_id.desc()).first().session_id+1)
+        db.session.commit()
 
 
 if __name__ == "__main__":
