@@ -14,8 +14,7 @@ h1 {
 
 p {
     color:darkslategray;
-    background-color: ivory;
-    font-size: 13px;
+    font-size: 9px;
 }
 .footer {
   position: fixed;
@@ -25,6 +24,17 @@ p {
   background-color: black;
   color: white;
   text-align: center;
+}
+.button {
+  border: none;
+  color: black;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  margin: 4px 2px;
+  cursor: pointer;
 }
 
 .card {

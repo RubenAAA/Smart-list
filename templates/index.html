@@ -9,21 +9,55 @@
 
     <body>
         <h1>Shopping list</h1>
-        <h6>Type if you want to add something</h6>
+        <div class="topnav">
+            <ul>
+                <a class="navbar-brand" href={{ url_for("index") }}>
+                    <li><img src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=60" height="20" class="d-inline-block align-top" alt="">
+                </a>
+
+                {% if current_user.is_authenticated %}
+                    <li><a class="active" href="/">Home</a>
+                    <li><a href="#">Upload receipt</a>
+                    <li><a href="my_lists">My shopping lists</a>
+                    <li style="float:right"><a href="logout">Logout</a>
+                    <li style="float:right"><a href ="#">My Profile</a>
+                {% else %}
+                    <li><a class="active" href="#">Home</a>
+                    <li><a href="#">New Post</a>
+                    <li style="float:right"><a href="login">Login</a>
+                    <li style="float:right"><a href="registration">Registration</a>
+                {% endif %}
+            </ul>
+        </div><br><br>
+
 
         <form  method="post">
           {{ form.hidden_tag() }}
 
-          {{ form.product.label }} {{ form.product() }}
-          <b>
+          {{ form.item.label }} {{ form.item() }}
+          <br>
           {{ form.submit_button() }}
 
-        </form>
+      </form><br>
 
+        <br>
 
+        {% for index, row in items.iterrows() %}
+        <br>
+          <div class="card">
+            <h5 style=float:left>{{ row["item"] }}</h5>
+            <br>
+          </div>
 
-        <br><br>
+        {% endfor %}
 
+        <form  method="post">
+          {{ form1.hidden_tag() }}
+
+          <br>
+          {{ form1.submit_button() }}
+
+        </form><br><br>
         <div class="footer">
             <h6>Copyright 2020</h6>
         </div>

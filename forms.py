@@ -31,14 +31,13 @@ class receipt_upload(FlaskForm):
     misc = StringField("Miscellaneous")
     submit_button = SubmitField("Submit")
 
-class Upload_product(FlaskForm):
-    product = StringField("Product", validators=[DataRequired()])
-    submit_button = SubmitField("Submit")
-
 
 class button_for_script(FlaskForm):
+    item = StringField("Product", validators=[DataRequired()])
     submit_button = SubmitField("Submit")
 
+class button1_for_script(FlaskForm):
+    submit_button = SubmitField("Save List")
 
 """
 Advanced functionalities

@@ -1,4 +1,4 @@
-# import pandas as pd
+import pandas as pd
 # import os
 import datetime
 from flask import Flask, render_template, redirect, url_for, flash
@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
-from forms import RegistrationForm, LoginForm, receipt_upload,  button_for_script
+from forms import RegistrationForm, LoginForm, receipt_upload, button_for_script, button1_for_script
 # for advanced functionalities add following:
 # from forms import  receipt_upload, keyword, food_upload
 app = Flask(__name__)
@@ -73,14 +73,28 @@ class Items(db.Model, UserMixin):
                              default=datetime.datetime.now)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
+db.create_all()
 
-@app.route("/")
+
+@app.route("/", methods=["GET", "POST"])
 def index():
-    # The smart shopping list
+    items=pd.DataFrame()
     form = button_for_script()
+    form1 = button1_for_script()
+
     if form.validate_on_submit():
-        attribute_session_id()
-    return render_template("index.html")
+        if add_item(form):
+            items=get_items()
+            flash("Posted")
+            return render_template("index.html", form=form, form1=form1, items=items)
+
+        else:
+            flash("Message has more than 140 characters. Please shorten it")
+
+    if form1.validate_on_submit():
+        return redirect(url_for("index"))
+
+    return render_template("index.html", form=form, form1=form1, items=items)
 
 
 @app.route("/upload-receipt")
@@ -89,6 +103,10 @@ def manual_receipt():
     if form.validate_on_submit():
         return True  # Placeholder
     return render_template("receipt.html", form=form)
+
+@app.route("/my_lists")
+def my_lists():
+    return render_template("my_lists.html")    
 
 
 """
@@ -206,10 +224,23 @@ def is_login_successful(form_data):
     else:
         return False
 
+def add_item(form_data):
+    product = Items(item=form_data.item.data,
+                    date_created=datetime.datetime.now(),
+                    user_id=current_user.id)
 
-def attribute_session_id():
-    Items.query.filter_by(user_id=current_user.id).session_id = Items.query.filter_by(
-        session_id != 0).order_by(Items.id.desc()).first().session_id + 1
+    db.session.add(product)
+    db.session.commit()
+
+    return product
+
+def get_items():
+    session_id = 0  # we need to implement a function here
+
+    df = pd.read_sql(Items.query.statement, db.session.bind)
+    current_df = df[df["session_id"] == session_id]
+
+    return current_df
 
 
 if __name__ == "__main__":
