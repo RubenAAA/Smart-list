@@ -249,9 +249,10 @@ def add_item(form_data):
 def get_items(session_id=0, number_of_items=5):
     df = pd.read_sql(Items.query.statement, db.session.bind)
     current_df = df[df["user_id"] == current_user.id]
-    current_df = df[current_df["session_id"] == session_id]
+    current_df = current_df[current_df["session_id"] == session_id]
     top_n_list = current_df['item'].value_counts()[:number_of_items].index.tolist()
-    return top_n_list
+    top_n_df = pd.DataFrame(top_n_list, columns=['items'])
+    return top_n_df
 
 
 def attribute_session_id():
