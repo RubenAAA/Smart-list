@@ -84,7 +84,7 @@ class Items(db.Model, UserMixin):
 def index():
     if current_user.is_authenticated:
         items = get_items()
-        popular = get_popular_items()
+        popular = get_popular_items(5)
         form = button_for_script()
         form1 = button1_for_script()
 
@@ -97,7 +97,7 @@ def index():
         if form1.validate_on_submit():
             attribute_session_id()
             items = get_items()
-            popular = get_popular_items()
+            popular = get_popular_items(5)
             return render_template("index.html", form=form, form1=form1,
                                    items=items, popular=popular)
 
@@ -251,7 +251,7 @@ def get_items(session_id=0):
     return current_df
 
 
-def get_popular_items(num_of_items=5):
+def get_popular_items(num_of_items):
     df = pd.read_sql(Items.query.statement, db.session.bind)
     current_df = df[df["user_id"] == current_user.id]
     top_n_list = current_df['item'].value_counts()[:num_of_items].index.tolist()
