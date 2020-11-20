@@ -106,7 +106,7 @@ def manual_receipt():
 
 @app.route("/my_lists")
 def my_lists():
-    return render_template("my_lists.html")    
+    return render_template("my_lists.html")
 
 
 """
@@ -241,6 +241,13 @@ def get_items():
     current_df = df[df["session_id"] == session_id]
 
     return current_df
+
+def attribute_session_id():
+    user_items = Items.query.filter_by(user_id=current_user.id).all()
+    user_unsubmitted_items = user_items.filter_by(session_id=0).all()
+    for items in user_unsubmitted_items:
+        items.session_id = Items.query.order_by(Items.session_id.desc()).first().session_id + 1
+
 
 
 if __name__ == "__main__":
