@@ -76,37 +76,47 @@ class Items(db.Model, UserMixin):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    items = pd.DataFrame()
-    form = button_for_script()
-    form1 = button1_for_script()
+    if current_user.is_authenticated:
+        items = pd.DataFrame()
+        form = button_for_script()
+        form1 = button1_for_script()
 
-    if form.validate_on_submit():
-        if add_item(form):
-            items = get_items()
-            flash("Posted")
-            return render_template("index.html", form=form, form1=form1,
-                                   items=items)
+        if form.validate_on_submit():
+            if add_item(form):
+                items = get_items()
+                flash("Posted")
+                return render_template("index.html", form=form, form1=form1,
+                                       items=items)
 
-        else:
-            flash("Message has more than 140 characters. Please shorten it")
+            else:
+                flash("Message has more than 140 characters. Please shorten it")
 
-    if form1.validate_on_submit():
-        return redirect(url_for("index"))
+        if form1.validate_on_submit():
+            return redirect(url_for("index"))
 
-    return render_template("index.html", form=form, form1=form1, items=items)
+        return render_template("index.html", form=form,
+                               form1=form1, items=items)
+    else:
+        return redirect(url_for("login"))
 
 
 @app.route("/upload-receipt")
 def manual_receipt():
-    form = receipt_upload()
-    if form.validate_on_submit():
-        return True  # Placeholder
-    return render_template("receipt.html", form=form)
+    if current_user.is_authenticated:
+        form = receipt_upload()
+        if form.validate_on_submit():
+            return True  # Placeholder
+        return render_template("receipt.html", form=form)
+    else:
+        return redirect(url_for("login"))
 
 
 @app.route("/my_lists")
 def my_lists():
-    return render_template("my_lists.html")
+    if current_user.is_authenticated:
+        return render_template("my_lists.html")
+    else:
+        return redirect(url_for("login"))
 
 
 """
