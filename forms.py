@@ -36,8 +36,10 @@ class button_for_script(FlaskForm):
     item = StringField("Product", validators=[DataRequired()])
     submit_button = SubmitField("Submit")
 
+
 class button1_for_script(FlaskForm):
     submit_button = SubmitField("Save List")
+
 
 """
 Advanced functionalities

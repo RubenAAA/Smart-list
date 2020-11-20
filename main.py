@@ -73,20 +73,19 @@ class Items(db.Model, UserMixin):
                              default=datetime.datetime.now)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
-db.create_all()
-
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    items=pd.DataFrame()
+    items = pd.DataFrame()
     form = button_for_script()
     form1 = button1_for_script()
 
     if form.validate_on_submit():
         if add_item(form):
-            items=get_items()
+            items = get_items()
             flash("Posted")
-            return render_template("index.html", form=form, form1=form1, items=items)
+            return render_template("index.html", form=form, form1=form1,
+                                   items=items)
 
         else:
             flash("Message has more than 140 characters. Please shorten it")
@@ -103,6 +102,7 @@ def manual_receipt():
     if form.validate_on_submit():
         return True  # Placeholder
     return render_template("receipt.html", form=form)
+
 
 @app.route("/my_lists")
 def my_lists():
@@ -224,6 +224,7 @@ def is_login_successful(form_data):
     else:
         return False
 
+
 def add_item(form_data):
     product = Items(item=form_data.item.data,
                     date_created=datetime.datetime.now(),
@@ -234,20 +235,20 @@ def add_item(form_data):
 
     return product
 
-def get_items():
-    session_id = 0  # we need to implement a function here
 
+def get_items(session_id=0, number_of_items=5):
     df = pd.read_sql(Items.query.statement, db.session.bind)
-    current_df = df[df["session_id"] == session_id]
+    current_df = df[df["user_id"] == current_user.id]
+    current_df = df[current_df["session_id"] == session_id]
+    top_n_list = current_df['item'].value_counts()[:number_of_items].index.tolist()
+    return top_n_list
 
-    return current_df
 
 def attribute_session_id():
     user_items = Items.query.filter_by(user_id=current_user.id).all()
     user_unsubmitted_items = user_items.filter_by(session_id=0).all()
     for items in user_unsubmitted_items:
         items.session_id = Items.query.order_by(Items.session_id.desc()).first().session_id + 1
-
 
 
 if __name__ == "__main__":
