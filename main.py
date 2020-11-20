@@ -84,6 +84,7 @@ class Items(db.Model, UserMixin):
 def index():
     if current_user.is_authenticated:
         items = get_items()
+        popular = get_popular_items()
         form = button_for_script()
         form1 = button1_for_script()
 
@@ -91,16 +92,17 @@ def index():
             add_item(form)
             items = get_items()
             return render_template("index.html", form=form, form1=form1,
-                                   items=items)
+                                   items=items, popular=popular)
 
         if form1.validate_on_submit():
-            items = get_popular_items()
             attribute_session_id()
+            items = get_items()
+            popular = get_popular_items()
             return render_template("index.html", form=form, form1=form1,
-                                   items=items)
+                                   items=items, popular=popular)
 
         return render_template("index.html", form=form,
-                               form1=form1, items=items)
+                               form1=form1, items=items, popular=popular)
     else:
         return redirect(url_for("login"))
 
@@ -157,12 +159,10 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
     form = RegistrationForm()
-
     if form.validate_on_submit():
         registration_worked = register_user(form)
         if registration_worked:
             return redirect(url_for("login"))
-
     return render_template("register.html", form=form, User=User)
 
 
@@ -171,7 +171,6 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
     form = LoginForm()
-
     if form.validate_on_submit():
         if is_login_successful(form):
             return redirect(url_for("index"))
@@ -212,7 +211,6 @@ def register_user(form_data):
     if uname_already_taken(form_data.uname.data):
         flash("That username is already taken!")
         return False
-
     hashed_password = bcrypt.generate_password_hash(form_data.password.data)
     user = User(fname=form_data.fname.data,
                 lname=form_data.lname.data,
@@ -228,13 +226,10 @@ def is_login_successful(form_data):
 
     email = form_data.email.data
     password = form_data.password.data
-
     user = User.query.filter_by(email=email).first()
-
     if user is not None:
         if bcrypt.check_password_hash(user.password, password):
             login_user(user)
-
             return True
     else:
         return False
@@ -244,10 +239,8 @@ def add_item(form_data):
     product = Items(item=form_data.item.data,
                     date_created=datetime.datetime.now(),
                     user_id=current_user.id)
-
     db.session.add(product)
     db.session.commit()
-
     return product
 
 

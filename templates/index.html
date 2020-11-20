@@ -42,6 +42,15 @@
 
         <br>
 
+        {% for index, row in popular.iterrows() %}
+        <br>
+          <div class="card">
+            <h5 style=float:left>{{ row["item"] }}</h5>
+            <br>
+          </div>
+
+        {% endfor %}
+        
         {% for index, row in items.iterrows() %}
         <br>
           <div class="card">
