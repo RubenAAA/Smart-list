@@ -7,7 +7,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
-from forms import RegistrationForm, LoginForm, receipt_upload, button_for_script, button1_for_script
+from forms import RegistrationForm, LoginForm, receipt_upload,
+from forms import button_for_script, button1_for_script, Select_recipe
 from api_keys import APIKEY
 # for advanced functionalities add following:
 # from forms import  receipt_upload, keyword, food_upload
@@ -156,17 +157,21 @@ def sugrec():
         add_item()
     else:
         return redirect(url_for("login"))
+"""
+
 
 @app.route("/find-recipe")
 def findrec():
     if current_user.is_authenticated:
         # Find recipe from keyword
-        get_recipe_id()
-        get_recipe_info()
-        add_item()
+        form = Select_recipe()
+        id_df = get_recipe_id()
+        if form.validate_on_submit():
+            n = form.recipe_chosen.data - 1
+            add_items_from_list(get_recipe_info(id_df["id"][n]),
+                                len(get_recipe_info(id_df["id"][n])))
     else:
         return redirect(url_for("login"))
-"""
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -259,6 +264,15 @@ def add_item(form_data):
     return product
 
 
+def add_items_from_list(item_list, list_len):
+    for i in range(0, list_len):
+        product = Items(item=item_list[i],
+                        date_created=datetime.datetime.now(),
+                        user_id=current_user.id)
+        db.session.add(product)
+        db.session.commit()
+
+
 def get_items(session_id=0):
     df = pd.read_sql(Items.query.statement, db.session.bind)
     current_df = df[df["user_id"] == current_user.id]
@@ -287,13 +301,19 @@ def attribute_session_id():
 def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
     url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/search"
     querys = {"query": "burger", "diet": "vegetarian",
-              "excludeIngredients": "coconut", "intolerances": "egg, gluten", "number": "10"}
+              "excludeIngredients": "coconut", "intolerances": "egg, gluten",
+                                    "number": "10"}
     headers = {
         'x-rapidapi-key': APIKEY,  # still have to register
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers, params=querys)
-    print(response.text)
+    recipe_ids = []
+    recipe_names = []
+    for i in range(0, number):
+        recipe_ids.append(response["results"][i]["id"])
+        recipe_names.append(response["results"][i]["title"])
+    return pd.DataFrame({'id': recipe_ids, 'name': recipe_names})
 
 
 def get_recipe_info(idn):
@@ -304,24 +324,28 @@ def get_recipe_info(idn):
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers)
-    print(response.text)
+
+    ingredients = []
+    for i in range(0, len(response["extendedIngredients"]):
+        ingredients.append(response["extendedIngredients"][i]["originalString"])
+    return ingredients
 
 
 def get_recipe_id_from_picture():
-    url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/images/analyze"
-    payload = """-----011000010111000001101001\r
+    url="https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/images/analyze"
+    payload="""-----011000010111000001101001\r
     Content-Disposition: form-data; name=\"file\"\r
     \r
     \r
     -----011000010111000001101001--\r
     \r
     """
-    headers = {
+    headers={
         'content-type': "multipart/form-data; boundary=---011000010111000001101001",
         'x-rapidapi-key': "9da2f73c89msh93d02299250d2d3p11c66djsnf01090a6a4b6",
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
-    response = requests.request("POST", url, data=payload, headers=headers)
+    response=requests.request("POST", url, data=payload, headers=headers)
     print(response.text)
 
 
