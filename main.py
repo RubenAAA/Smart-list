@@ -170,7 +170,7 @@ def sugrec():
 """
 
 
-@app.route("/find-recipe")
+@app.route("/find-recipe", methods=["GET", "POST"])
 def findrec():
     if current_user.is_authenticated:
         # Find recipe from keyword
@@ -191,7 +191,7 @@ def findrec():
             n = form.recipe_chosen.data - 1
             add_items_from_list(get_recipe_info(id_df["id"][n]),
                                 len(get_recipe_info(id_df["id"][n])))
-        return render_template("add_recipe.html", form=form, id_df=id_df)
+        return render_template("add_recipe.html", form=form)
     else:
         return redirect(url_for("login"))
 
