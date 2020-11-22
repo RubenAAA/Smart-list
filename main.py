@@ -170,7 +170,7 @@ def findrec():
             n = form.recipe_chosen.data - 1
             add_items_from_list(get_recipe_info(id_df["id"][n]),
                                 len(get_recipe_info(id_df["id"][n])))
-        # return render_template(".html", form=form, id_df=id_df)
+    # return render_template(".html", form=form, id_df=id_df)
     else:
         return redirect(url_for("login"))
 
