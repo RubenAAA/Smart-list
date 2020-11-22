@@ -8,7 +8,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
 from forms import RegistrationForm, LoginForm, receipt_upload
-from forms import button_for_script, button1_for_script, Select_recipe
+from forms import button_for_script, button1_for_script, Select_recipe, keyword
 from api_keys import APIKEY
 # for advanced functionalities add following:
 # from forms import  receipt_upload, keyword, food_upload
@@ -110,7 +110,7 @@ def index():
         return redirect(url_for("login"))
 
 
-@app.route("/upload-receipt")
+@app.route("/upload-receipt")   # We still haven't discussed this shit
 def manual_receipt():
     if current_user.is_authenticated:
         form = receipt_upload()
@@ -174,24 +174,30 @@ def sugrec():
 def findrec():
     if current_user.is_authenticated:
         # Find recipe from keyword
-        id_df = get_recipe_id()
-        choices = [('1', id_df["name"][0]),
-                   ('2', id_df["name"][1]),
-                   ('3', id_df["name"][2]),
-                   ('4', id_df["name"][3]),
-                   ('5', id_df["name"][4]),
-                   ('6', id_df["name"][5]),
-                   ('7', id_df["name"][6]),
-                   ('8', id_df["name"][7]),
-                   ('9', id_df["name"][8]),
-                   ('10', id_df["name"][9])]
+        form_diet = keyword()
         form = Select_recipe()
-        form.recipe_chosen.choices = choices
-        if form.validate_on_submit():
-            n = form.recipe_chosen.data - 1
-            add_items_from_list(get_recipe_info(id_df["id"][n]),
-                                len(get_recipe_info(id_df["id"][n])))
-        return render_template("add_recipe.html", form=form)
+        if form_diet.validate_on_submit():
+            id_df = get_recipe_id(form_diet.query.data, form_diet.diet.data,
+                                  form_diet.excludeIngredients.data,
+                                  form_diet.intolerances.data,
+                                  10)
+            choices = [('1', id_df["name"][0]),
+                       ('2', id_df["name"][1]),
+                       ('3', id_df["name"][2]),
+                       ('4', id_df["name"][3]),
+                       ('5', id_df["name"][4]),
+                       ('6', id_df["name"][5]),
+                       ('7', id_df["name"][6]),
+                       ('8', id_df["name"][7]),
+                       ('9', id_df["name"][8]),
+                       ('10', id_df["name"][9])]
+            form.recipe_chosen.choices = choices
+            if form.validate_on_submit():
+                n = form.recipe_chosen.data - 1
+                add_items_from_list(get_recipe_info(id_df["id"][n]),
+                                    len(get_recipe_info(id_df["id"][n])))
+        return render_template("add_recipe.html", form=form,
+                               form_diet=form_diet)
     else:
         return redirect(url_for("login"))
 
@@ -322,9 +328,10 @@ def attribute_session_id():
 
 def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
     url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/search"
-    querys = {"query": "burger", "diet": "vegetarian",
-              "excludeIngredients": "coconut", "intolerances": "egg, gluten",
-              "number": "10"}
+    querys = {"query": query, "diet": diet,
+              "excludeIngredients": excludeIngredients,
+              "intolerances": intolerances,
+              "number": number}
     headers = {
         'x-rapidapi-key': APIKEY,  # still have to register
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
@@ -352,18 +359,17 @@ def get_recipe_info(idn):
     for i in range(0, len(response["extendedIngredients"]):
         ingredients.append(response["extendedIngredients"][i]["originalString"])
     return ingredients
-"""
 
 
 def get_recipe_id_from_picture():
     url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/images/analyze"
-    payload = """-----011000010111000001101001\r
+    payload = "-----011000010111000001101001\r
     Content-Disposition: form-data; name=\"file\"\r
     \r
     \r
     -----011000010111000001101001--\r
     \r
-    """
+    "
     headers = {
         'content-type': "multipart/form-data; boundary=---011000010111000001101001",
         'x-rapidapi-key': "9da2f73c89msh93d02299250d2d3p11c66djsnf01090a6a4b6",
@@ -371,7 +377,7 @@ def get_recipe_id_from_picture():
     }
     response = requests.request("POST", url, data=payload, headers=headers)
     print(response.text)
-
+"""
 
 if __name__ == "__main__":
     app.run(debug=True)

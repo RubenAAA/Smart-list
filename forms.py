@@ -47,6 +47,17 @@ class Select_recipe(Form):
     submit_button = SubmitField('Submit')
 
 
+class keyword(Form):
+    query = StringField("Enter a keyword for a recipe.",
+                        validators=[DataRequired()])
+    diet = StringField("Enter a diet if you follow one")
+    excludeIngredients = StringField(
+        "Enter some ingredients that you do not want to be used in the recipe. Separate by a comma and a space if multiple")
+    intolerances = StringField(
+        "Enter foods you are intolerant to. Separate by a comma and a space if multiple")
+    submit_button = SubmitField("Confirm your query and press display recipes button")
+
+
 """
 Advanced functionalities
 
@@ -58,11 +69,6 @@ class receipt_upload_adv(Form):
 
 class food_upload(Form):
     food_picture = FileField("Upload a picture of your food",
-                                        validators=[DataRequired()])
-    submit_button = SubmitField("Submit")
-
-class keyword(Form):
-    kw_entry = StringField("What do you want to find a recipe for?",
                                         validators=[DataRequired()])
     submit_button = SubmitField("Submit")
 """

@@ -8,7 +8,7 @@
     </head>
 
     <body>
-        <h1>Shopping list</h1>
+        <h1>Add recipe</h1>
         <div class="topnav">
             <ul>
                 <a class="navbar-brand" href={{ url_for("index") }}>
@@ -31,7 +31,43 @@
         </div><br><br>
 
 
-        <form  method="post">
+<script type="text/javascript">
+        function toggle_display(){
+          el = document.querySelector('.content_section');
+          el2 = document.querySelector('.content2_section');
+
+          if(el.style.display == 'none'){
+              el.style.display = 'block'
+              el2.style.display = "none"
+          }else{
+             el.style.display = 'none'
+             el2.style.display = "block"
+          }
+        }
+</script>
+
+
+        <div class="content_section">
+          <form  method="post">
+          {{ form_diet.hidden_tag() }}
+
+          {{ form_diet.query.label }} {{ form_diet.query() }}
+          <br>  <br>
+          {{ form_diet.diet.label }} {{ form_diet.diet() }}
+          <br>  <br>
+          {{ form_diet.excludeIngredients.label }} {{ form_diet.excludeIngredients() }}
+          <br>  <br>
+          {{ form_diet.intolerances.label }} {{ form_diet.intolerances() }}
+          <br>
+          {{ form_diet.submit_button() }}
+
+        </form><br><br>
+      </div>
+      <br><br>
+        <button onclick="toggle_display()">Display recipes</button>
+      <div class="content2_section", style="display: none;">
+      <br><br>
+        <form>
           {{ form.hidden_tag() }}
 
           {{ form.recipe_chosen() }}
@@ -39,6 +75,7 @@
           {{ form.submit_button() }}
 
       </form><br><br>
+      </div>
       <div class="footer">
           <h6>Copyright 2020</h6>
       </div>
