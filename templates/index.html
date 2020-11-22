@@ -57,6 +57,9 @@
           <div class="card">
             <h5 style=float:left>{{ row["item"] }}</h5>
             <br>
+            <form class="inline-form" method="post" action="{{ url_for('delete', item_id=row.id) }}">
+                <input class="btn" type="submit" name="delete" value="Delete">
+            </form>
           </div>
 
         {% endfor %}

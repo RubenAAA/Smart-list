@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
-from forms import RegistrationForm, LoginForm, receipt_upload,
+from forms import RegistrationForm, LoginForm, receipt_upload
 from forms import button_for_script, button1_for_script, Select_recipe
 from api_keys import APIKEY
 # for advanced functionalities add following:
@@ -128,6 +128,14 @@ def my_lists():
     else:
         return redirect(url_for("login"))
 
+@app.route('/delete/<int:item_id>', methods=['POST'])
+@login_required
+def delete(item_id):
+    item = Items.query.get_or_404(item_id)
+    db.session.delete(item)
+    db.session.commit()
+    flash('Item deleted.')
+    return redirect(url_for('index'))
 
 """
 Advanced functionalities
@@ -316,7 +324,7 @@ def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
         recipe_names.append(response["results"][i]["title"])
     return pd.DataFrame({'id': recipe_ids, 'name': recipe_names})
 
-
+"""
 def get_recipe_info(idn):
     idn = str(idn)
     url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/" + idn + "/information"
@@ -330,7 +338,7 @@ def get_recipe_info(idn):
     for i in range(0, len(response["extendedIngredients"]):
         ingredients.append(response["extendedIngredients"][i]["originalString"])
     return ingredients
-
+"""
 
 def get_recipe_id_from_picture():
     url="https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/images/analyze"
