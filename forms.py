@@ -25,6 +25,7 @@ class receipt_upload(FlaskForm):
     grain = StringField("Grain-based products")
     milk = StringField("Milk-based products")
     proteins = StringField("Proteins")
+    greens = StringField("Greens")
     vegetables = StringField("Vegetables")
     fruits = PasswordField("Fruits")
     drinks = StringField("Drinks")
@@ -43,18 +44,19 @@ class button1_for_script(FlaskForm):
 
 class Select_recipe(Form):
     recipe_chosen = RadioField(
-        'Choose the number corresponding to the recipe you want to add to your shopping list',
-        choices=[('1', 'Choose recipe number 1'),
-                 ('2', 'Choose recipe number 2'),
-                 ('3', 'Choose recipe number 3'),
-                 ('4', 'Choose recipe number 4'),
-                 ('5', 'Choose recipe number 5'),
-                 ('6', 'Choose recipe number 6'),
-                 ('7', 'Choose recipe number 7'),
-                 ('8', 'Choose recipe number 8'),
-                 ('9', 'Choose recipe number 9'),
-                 ('10', 'Choose recipe number 10')])
-    submit = SubmitField('Submit')
+        'Choose the recipe you want to add to your shopping list', coerce=int)
+    submit_button = SubmitField('Submit')
+
+
+class keyword(Form):
+    query = StringField("Enter a keyword for a recipe.",
+                        validators=[DataRequired()])
+    diet = StringField("Enter a diet if you follow one")
+    excludeIngredients = StringField(
+        "Enter some ingredients that you do not want to be used in the recipe. Separate by a comma and a space if multiple")
+    intolerances = StringField(
+        "Enter foods you are intolerant to. Separate by a comma and a space if multiple")
+    submit_button = SubmitField("Confirm your query and press display recipes button")
 
 
 """
@@ -68,11 +70,6 @@ class receipt_upload_adv(Form):
 
 class food_upload(Form):
     food_picture = FileField("Upload a picture of your food",
-                                        validators=[DataRequired()])
-    submit_button = SubmitField("Submit")
-
-class keyword(Form):
-    kw_entry = StringField("What do you want to find a recipe for?",
                                         validators=[DataRequired()])
     submit_button = SubmitField("Submit")
 """

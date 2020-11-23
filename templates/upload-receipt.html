@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -16,9 +17,9 @@
                 </a>
 
                 {% if current_user.is_authenticated %}
-                    <li><a class="active" href="/">Home</a>
+                    <li><a href="/">Home</a>
                     <li><a href="find-recipe">Find recipe</a>
-                    <li><a href="upload-receipt">Upload receipt</a>
+                    <li><a class="active" href="upload-receipt">Upload receipt</a>
                     <li><a href="my_lists">My shopping lists</a>
                     <li style="float:right"><a href="logout">Logout</a>
                     <li style="float:right"><a href ="#">My Profile</a>
@@ -30,53 +31,40 @@
                 {% endif %}
             </ul>
         </div><br><br>
+<h3>Upload receipt</h3>
+<h6>If you want to enter your receipt by hand</h6><br>
 
+<form  method="post"  class="formscss">
+  {{ form.hidden_tag() }}
 
-        <form  method="post">
-          {{ form.hidden_tag() }}
+  {{ form.grain.label }} {{ form.grain() }}
+  <br>  <br>
+  {{ form.milk.label }} {{ form.milk() }}
+  <br>  <br>
+  {{ form.proteins.label }} {{ form.proteins() }}
+  <br>  <br>
+  {{ form.greens.label }} {{ form.greens() }}
+  <br>  <br>
+  {{ form.fruits.label }} {{ form.fruits() }}
+  <br>  <br>
+  {{ form.drinks.label }} {{ form.drinks() }}
+  <br>  <br>
+  {{ form.misc.label }} {{ form.misc() }}
+  <br>  <br>
+  {{ form.submit_button() }}
 
-          {{ form.item.label }} {{ form.item() }}
-          <br>
-          {{ form.submit_button() }}
+</form>
 
-      </form><br>
-
-        <br>
-        <h2> The five items you most often buy </h2>
-        {% for index, row in popular.iterrows() %}
-        <br>
-
-          <div class="card-special">
-            <h5>{{ row["item"] }}</h5>
-            <br>
-          </div>
-
-
-        {% endfor %}
-        <br>
-        <h2> Your current list </h2>
-        {% for index, row in items.iterrows() %}
-        <br>
-          <div class="card">
-            <h5 style=float:left>{{ row["item"] }}</h5>
-            <br>
-            <form class="inline-form" method="post" action="{{ url_for('delete', item_id=row.id) }}">
-                <input class="btn" type="submit" name="delete" value="Delete">
-            </form>
-          </div>
-
-        {% endfor %}
-
-        <form  method="post">
-          {{ form1.hidden_tag() }}
-
-          <br>
-          {{ form1.submit_button() }}
-
-        </form><br><br>
-        <div class="footer">
-            <h6>Copyright 2020</h6>
-        </div>
-
-    </body>
+<div class="container" style="min-height:100% width:80%">
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+	    {% for message in messages %}
+		  <div class="alert alert-warning alert-dismissible" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+			{{message}}
+		  </div>
+		{% endfor %}
+	  {% endif %}
+	{% endwith %}
+</div>
 </html>

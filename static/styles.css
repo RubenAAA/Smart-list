@@ -2,12 +2,12 @@ body {
   text-align: center;
   font-family: Arial, Helvetica, sans-serif;
   color: black;
-  background-color: grey;
+  background-image: url("https://images.unsplash.com/photo-1495195134817-aeb325a55b65?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTd8fGZvb2R8ZW58MHx8MHw%3D&auto=format&fit=crop&w=700&q=60");
 }
 
 h1 {
   color:yellow;
-  font-size:43;
+  font-size:50;
   font-family:"Courier New", Courier, monospace;
   padding-top:22px;
 }
@@ -46,6 +46,7 @@ p {
   padding-top: 20px;
   border: 2px solid green;
   background-color: #f2f2f2;
+  text-align: center;
 }
 .card-special {
     display: block;
@@ -54,9 +55,16 @@ p {
     padding-left: 40px;
     padding-right: 40px;
     padding-top: 20px;
-    border: 2px solid red;
-    background-color: palegreen;
-    opacity: 0.4;
+    height: 60px;
+    background: url("https://images.unsplash.com/photo-1504548840739-580b10ae7715?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxzZWFyY2h8OXx8Y2FsbSUyMGJhY2tncm91bmR8ZW58MHx8MHw%3D&auto=format&fit=crop&w=700&q=60");
+    border: 2px solid green;
+
+    text-align: center;
+}
+.card-img-top {
+    width: 120%;
+    height: 60px;
+    object-fit: cover;
 }
 
 .card-overview {

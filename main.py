@@ -1,5 +1,7 @@
 import pandas as pd
 import requests
+from PIL import Image
+from io import BytesIO
 # import os
 import datetime
 from flask import Flask, render_template, redirect, url_for, flash
@@ -8,8 +10,9 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
 from forms import RegistrationForm, LoginForm, receipt_upload
-from forms import button_for_script, button1_for_script, Select_recipe
+from forms import button_for_script, button1_for_script, Select_recipe, keyword
 from api_keys import APIKEY
+
 # for advanced functionalities add following:
 # from forms import  receipt_upload, keyword, food_upload
 app = Flask(__name__)
@@ -93,14 +96,14 @@ def index():
 
         if form.validate_on_submit():
             add_item(form)
-            items = get_items() # why do we need this? Is'n it the same as above
+            items = get_items() # why do we need this?
             return redirect("/")
             # return render_template("index.html", form=form, form1=form1,
             #                         items=items, popular=popular)
 
         if form1.validate_on_submit():
             attribute_session_id()
-            items = get_items() # why do we need this
+            items = get_items() # why do we need this?
             popular = get_popular_items(5) # why do we need this?
             return redirect("/")
             # return render_template("index.html", form=form, form1=form1,
@@ -112,13 +115,13 @@ def index():
         return redirect(url_for("login"))
 
 
-@app.route("/upload-receipt")
+@app.route("/upload-receipt")   # We still haven't discussed this shit
 def manual_receipt():
     if current_user.is_authenticated:
         form = receipt_upload()
         if form.validate_on_submit():
             return True  # Placeholder
-        return render_template("receipt.html", form=form)
+        return render_template("upload-receipt.html", form=form)
     else:
         return redirect(url_for("login"))
 
@@ -129,6 +132,16 @@ def my_lists():
         return render_template("my_lists.html")
     else:
         return redirect(url_for("login"))
+
+
+@app.route('/delete/<int:item_id>', methods=['POST'])
+@login_required
+def delete(item_id):
+    item = Items.query.get_or_404(item_id)
+    db.session.delete(item)
+    db.session.commit()
+    flash('Item deleted.')
+    return redirect(url_for('index'))
 
 
 """
@@ -162,22 +175,39 @@ def sugrec():
 """
 
 
-@app.route("/find-recipe")
+@app.route("/find-recipe", methods=["GET", "POST"])
 def findrec():
     if current_user.is_authenticated:
         # Find recipe from keyword
+        form_diet = keyword()
         form = Select_recipe()
-        id_df = get_recipe_id()
-        if form.validate_on_submit():
-            n = form.recipe_chosen.data - 1
-            add_items_from_list(get_recipe_info(id_df["id"][n]),
-                                len(get_recipe_info(id_df["id"][n])))
-        # return render_template(".html", form=form, id_df=id_df)
+        if form_diet.validate_on_submit():
+            id_df = get_recipe_id(form_diet.query.data, form_diet.diet.data,
+                                  form_diet.excludeIngredients.data,
+                                  form_diet.intolerances.data,
+                                  10)
+            choices = [('1', id_df["name"][0]),
+                       ('2', id_df["name"][1]),
+                       ('3', id_df["name"][2]),
+                       ('4', id_df["name"][3]),
+                       ('5', id_df["name"][4]),
+                       ('6', id_df["name"][5]),
+                       ('7', id_df["name"][6]),
+                       ('8', id_df["name"][7]),
+                       ('9', id_df["name"][8]),
+                       ('10', id_df["name"][9])]
+            form.recipe_chosen.choices = choices
+            if form.validate_on_submit():
+                n = form.recipe_chosen.data - 1
+                add_items_from_list(get_recipe_info(id_df["id"][n]),
+                                    len(get_recipe_info(id_df["id"][n])))
+        return render_template("find_recipe.html", form=form,
+                               form_diet=form_diet)
     else:
         return redirect(url_for("login"))
 
 
-@app.route("/register", methods=["GET", "POST"])
+@ app.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
@@ -189,7 +219,7 @@ def register():
     return render_template("register.html", form=form, User=User)
 
 
-@app.route("/login", methods=["GET", "POST"])
+@ app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("index"))
@@ -206,8 +236,8 @@ def login():
     return render_template("login.html", form=form, User=User)
 
 
-@app.route("/logout")
-@login_required
+@ app.route("/logout")
+@ login_required
 def logout():
     logout_user()
     return redirect(url_for("login"))
@@ -303,9 +333,10 @@ def attribute_session_id():
 
 def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
     url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/search"
-    querys = {"query": "burger", "diet": "vegetarian",
-              "excludeIngredients": "coconut", "intolerances": "egg, gluten",
-                                    "number": "10"}
+    querys = {"query": query, "diet": diet,
+              "excludeIngredients": excludeIngredients,
+              "intolerances": intolerances,
+              "number": number}
     headers = {
         'x-rapidapi-key': APIKEY,  # still have to register
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
@@ -319,6 +350,7 @@ def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
     return pd.DataFrame({'id': recipe_ids, 'name': recipe_names})
 
 
+"""
 def get_recipe_info(idn):
     idn = str(idn)
     url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/" + idn + "/information"
@@ -335,22 +367,22 @@ def get_recipe_info(idn):
 
 
 def get_recipe_id_from_picture():
-    url="https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/images/analyze"
-    payload="""-----011000010111000001101001\r
+    url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/images/analyze"
+    payload = "-----011000010111000001101001\r
     Content-Disposition: form-data; name=\"file\"\r
     \r
     \r
     -----011000010111000001101001--\r
     \r
-    """
-    headers={
+    "
+    headers = {
         'content-type': "multipart/form-data; boundary=---011000010111000001101001",
         'x-rapidapi-key': "9da2f73c89msh93d02299250d2d3p11c66djsnf01090a6a4b6",
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
-    response=requests.request("POST", url, data=payload, headers=headers)
+    response = requests.request("POST", url, data=payload, headers=headers)
     print(response.text)
-
+"""
 
 if __name__ == "__main__":
     app.run(debug=True)

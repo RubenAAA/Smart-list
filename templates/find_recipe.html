@@ -16,8 +16,8 @@
                 </a>
 
                 {% if current_user.is_authenticated %}
-                    <li><a class="active" href="/">Home</a>
-                    <li><a href="find-recipe">Find recipe</a>
+                    <li><a href="/">Home</a>
+                    <li><a class="active" href="find-recipe">Find recipe</a>
                     <li><a href="upload-receipt">Upload receipt</a>
                     <li><a href="my_lists">My shopping lists</a>
                     <li style="float:right"><a href="logout">Logout</a>
@@ -29,54 +29,59 @@
                     <li style="float:right"><a href="registration">Registration</a>
                 {% endif %}
             </ul>
-        </div><br><br>
+        </div><br>
+
+<h3>Find Recipe</h3>
+<h6>At this page you can find any recipe you want</h6><br>
+
+<script type="text/javascript">
+        function toggle_display(){
+          el = document.querySelector('.content_section');
+          el2 = document.querySelector('.content2_section');
+
+          if(el.style.display == 'none'){
+              el.style.display = 'block'
+              el2.style.display = "none"
+          }else{
+             el.style.display = 'none'
+             el2.style.display = "block"
+          }
+        }
+</script>
 
 
-        <form  method="post">
+        <div class="content_section">
+          <form  method="post">
+          {{ form_diet.hidden_tag() }}
+
+          {{ form_diet.query.label }} {{ form_diet.query() }}
+          <br>  <br>
+          {{ form_diet.diet.label }} {{ form_diet.diet() }}
+          <br>  <br>
+          {{ form_diet.excludeIngredients.label }} {{ form_diet.excludeIngredients() }}
+          <br>  <br>
+          {{ form_diet.intolerances.label }} {{ form_diet.intolerances() }}
+          <br>
+          {{ form_diet.submit_button() }}
+
+        </form><br><br>
+      </div>
+      <br><br>
+        <button onclick="toggle_display()">Display recipes</button>
+      <div class="content2_section", style="display: none;">
+      <br><br>
+        <form>
           {{ form.hidden_tag() }}
 
-          {{ form.item.label }} {{ form.item() }}
+          {{ form.recipe_chosen() }}
           <br>
           {{ form.submit_button() }}
 
-      </form><br>
+      </form><br><br>
+      </div>
+      <div class="footer">
+          <h6>Copyright 2020</h6>
+      </div>
 
-        <br>
-        <h2> The five items you most often buy </h2>
-        {% for index, row in popular.iterrows() %}
-        <br>
-
-          <div class="card-special">
-            <h5>{{ row["item"] }}</h5>
-            <br>
-          </div>
-
-
-        {% endfor %}
-        <br>
-        <h2> Your current list </h2>
-        {% for index, row in items.iterrows() %}
-        <br>
-          <div class="card">
-            <h5 style=float:left>{{ row["item"] }}</h5>
-            <br>
-            <form class="inline-form" method="post" action="{{ url_for('delete', item_id=row.id) }}">
-                <input class="btn" type="submit" name="delete" value="Delete">
-            </form>
-          </div>
-
-        {% endfor %}
-
-        <form  method="post">
-          {{ form1.hidden_tag() }}
-
-          <br>
-          {{ form1.submit_button() }}
-
-        </form><br><br>
-        <div class="footer">
-            <h6>Copyright 2020</h6>
-        </div>
-
-    </body>
+  </body>
 </html>

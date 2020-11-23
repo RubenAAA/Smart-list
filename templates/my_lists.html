@@ -1,1 +1,33 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='styles.css')}} href="css/yourStyles.css?<?php echo time(); ?>">
+    </head>
+
+    <body>
+        <h1>Shopping list</h1>
+        <div class="topnav">
+            <ul>
+                <a class="navbar-brand" href={{ url_for("index") }}>
+                    <li><img src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=60" height="20" class="d-inline-block align-top" alt="">
+                </a>
+
+                {% if current_user.is_authenticated %}
+                    <li><a href="/">Home</a>
+                    <li><a href="find-recipe">Find recipe</a>
+                    <li><a href="upload-receipt">Upload receipt</a>
+                    <li><a class="active" href="my_lists">My shopping lists</a>
+                    <li style="float:right"><a href="logout">Logout</a>
+                    <li style="float:right"><a href ="#">My Profile</a>
+                {% else %}
+                    <li><a class="active" href="#">Home</a>
+                    <li><a href="#">New Post</a>
+                    <li style="float:right"><a href="login">Login</a>
+                    <li style="float:right"><a href="registration">Registration</a>
+                {% endif %}
+            </ul>
+        </div><br><br>
 <h2>My shopping lists</h2>
