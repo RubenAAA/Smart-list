@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm, Form
 from wtforms import StringField, SubmitField, PasswordField, RadioField
+from flask_wtf.file import FileField
 from wtforms.validators import DataRequired
 # We need the following two for the file upload forms:
 # from flask_wtf.file import FileField
@@ -67,9 +68,10 @@ class receipt_upload_adv(Form):
                                             validators=[DataRequired()])
     submit_button = SubmitField("Submit")
 
+"""
+
 
 class food_upload(Form):
     food_picture = FileField("Upload a picture of your food",
-                                        validators=[DataRequired()])
+                             validators=[DataRequired()])
     submit_button = SubmitField("Submit")
-"""
