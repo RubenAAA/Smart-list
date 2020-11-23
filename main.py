@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
-from forms import RegistrationForm, LoginForm, receipt_upload,
+from forms import RegistrationForm, LoginForm, receipt_upload
 from forms import button_for_script, button1_for_script, Select_recipe
 from api_keys import APIKEY
 # for advanced functionalities add following:
@@ -93,16 +93,18 @@ def index():
 
         if form.validate_on_submit():
             add_item(form)
-            items = get_items()
-            return render_template("index.html", form=form, form1=form1,
-                                   items=items, popular=popular)
+            items = get_items() # why do we need this? Is'n it the same as above
+            return redirect("/")
+            # return render_template("index.html", form=form, form1=form1,
+            #                         items=items, popular=popular)
 
         if form1.validate_on_submit():
             attribute_session_id()
-            items = get_items()
-            popular = get_popular_items(5)
-            return render_template("index.html", form=form, form1=form1,
-                                   items=items, popular=popular)
+            items = get_items() # why do we need this
+            popular = get_popular_items(5) # why do we need this?
+            return redirect("/")
+            # return render_template("index.html", form=form, form1=form1,
+            #                         items=items, popular=popular)
 
         return render_template("index.html", form=form,
                                form1=form1, items=items, popular=popular)
@@ -210,9 +212,9 @@ def logout():
     logout_user()
     return redirect(url_for("login"))
 
-
+###########
 # functions
-
+###########
 
 def register_user(form_data):
     def email_already_taken(email):
@@ -327,7 +329,7 @@ def get_recipe_info(idn):
     response = requests.request("GET", url, headers=headers)
 
     ingredients = []
-    for i in range(0, len(response["extendedIngredients"]):
+    for i in range(0, len(response["extendedIngredients"])):
         ingredients.append(response["extendedIngredients"][i]["originalString"])
     return ingredients
 
