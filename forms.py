@@ -52,16 +52,19 @@ class Select_recipe(Form):
 class keyword(Form):
     query = StringField("Enter a keyword for a recipe.",
                         validators=[DataRequired()])
-    diet = StringField("Enter a diet if you follow one [vegan, vegetarian, gluten free, dairy free, paleo, etc.]")
+    diet = StringField(
+        "Enter a diet if you follow one [vegan, vegetarian, gluten free, dairy free, paleo, etc.]")
     excludeIngredients = TextAreaField(
         "Enter some ingredients that you do not want to be used in the recipe. Separate by a comma and a space if multiple")
     intolerances = TextAreaField(
         "Enter foods you are intolerant to. Separate by a comma and a space if multiple")
     submit_button = SubmitField("Confirm your query and press display recipes button")
 
+
 class user_preference(FlaskForm):
-    preference = Stringfield("Change the amount of default items displayed")
+    preference = StringField("Change the amount of default items displayed")
     sumbit_button = SubmitField("Submit")
+
 
 """
 Advanced functionalities
