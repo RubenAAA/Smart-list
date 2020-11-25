@@ -19,7 +19,7 @@
                     <li><a href="/">Home</a>
                     <li><a href="find-recipe">Find recipe</a>
                     <li><a href="upload-receipt">Upload receipt</a>
-                    <li><a href="my_lists">My shopping lists</a>
+                    <li><a href="#">Analytics</a>
                     <li style="float:right"><a href="logout">Logout</a>
                     <li style="float:right"><a class="active" href ="my-profile">My Profile</a>
                 {% else %}
@@ -32,4 +32,5 @@
         </div><br><br>
 <h2>Profile of {{name}} </h2><br>
 <h5>Your username {{username}}<h5><br>
-<h5>Your current email {{email}}<h5>
+<h5>Your current email {{email}}<h5><br>
+<p>See old shopping lists <a href={{ url_for("my_lists") }}>here</a></p>
