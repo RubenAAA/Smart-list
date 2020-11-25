@@ -32,5 +32,14 @@
         </div><br><br>
 <h2>Profile of {{name}} </h2><br>
 <h5>Your username {{username}}<h5><br>
-<h5>Your current email {{email}}<h5><br>
-<p>See old shopping lists <a href={{ url_for("my_lists") }}>here</a></p>
+<h5>Your current email {{email}}<h5>
+
+<h4> Change User Preference </h4>
+<form  method="post">
+  {{ form.hidden_tag() }}
+
+  {{ form.preference.label }} {{ form.preference() }}
+  <br>
+  {{ form.submit_button() }}
+
+</form><br>

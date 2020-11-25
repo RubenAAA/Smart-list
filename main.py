@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
-from forms import RegistrationForm, LoginForm, receipt_upload, food_upload
+from forms import RegistrationForm, LoginForm, receipt_upload, food_upload, user_preference
 from forms import button_for_script, button1_for_script, Select_recipe, keyword
 from api_keys import APIKEY
 
@@ -37,12 +37,12 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100), nullable=False)
     receipts = db.relationship("Receipts", backref="op", lazy=True)
     items = db.relationship("Items", backref="opp", lazy=True)
+    # num_of_items = db.Column(db.Integer, default=5)
 
     def __repr__(self):
         return f"User(id: '{self.id}', fname: '{self.fname}', " +\
                f" lname: '{self.lname}', uname: '{self.uname}')" +\
                f" password: '{self.password}', email: '{self.email}')"
-
 
 
 class Receipts(db.Model, UserMixin):
@@ -216,12 +216,21 @@ def findrec():
     else:
         return redirect(url_for("login"))
 
+
 @app.route("/my-profile")
 def my_profile():
-    name, username, email=get_name()
+    name, username, email = get_name()
+    form = user_preference()
+    if form.validate_on_submit():
+        return render_template("my_profile.html", name=name,
+                                                  username=username,
+                                                  email=email,
+                                                  form=form)
+
     return render_template("my_profile.html", name=name,
                                               username=username,
-                                              email=email)
+                                              email=email,
+                                              form=form)
 
 
 @ app.route("/register", methods=["GET", "POST"])
@@ -307,13 +316,13 @@ def is_login_successful(form_data):
 
 
 def get_name():
-    current_id=current_user.id
-    my_user=User.query.filter_by(id=current_id).first()
+    current_id = current_user.id
+    my_user = User.query.filter_by(id=current_id).first()
     if my_user is None:
         return False
-    name=my_user.fname + " " + my_user.lname
-    username=my_user.uname
-    email=my_user.email
+    name = my_user.fname + " " + my_user.lname
+    username = my_user.uname
+    email = my_user.email
     return name, username, email
 
 
@@ -371,6 +380,7 @@ def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers, params=querys)
+    response = response.json()
     recipe_ids = []
     recipe_names = []
     for i in range(0, number):
@@ -388,6 +398,7 @@ def get_recipe_info(idn):
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers)
+    response = response.json()
 
     ingredients = []
     for i in range(0, len(response["extendedIngredients"])):
@@ -411,6 +422,7 @@ def get_recipe_id_from_picture(food_picture):
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("POST", url, data=payload, headers=headers)
+    response = response.json()
     recipe_ids = []
     recipe_names = []
 
