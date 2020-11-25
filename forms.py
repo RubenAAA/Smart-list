@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm, Form
-from wtforms import StringField, SubmitField, PasswordField, RadioField
+from wtforms import StringField, SubmitField, PasswordField, RadioField, TextAreaField
 from flask_wtf.file import FileField
 from wtforms.validators import DataRequired
 # We need the following two for the file upload forms:
@@ -52,10 +52,10 @@ class Select_recipe(Form):
 class keyword(Form):
     query = StringField("Enter a keyword for a recipe.",
                         validators=[DataRequired()])
-    diet = StringField("Enter a diet if you follow one")
-    excludeIngredients = StringField(
+    diet = StringField("Enter a diet if you follow one [vegan, vegetarian, gluten free, dairy free, paleo, etc.]")
+    excludeIngredients = TextAreaField(
         "Enter some ingredients that you do not want to be used in the recipe. Separate by a comma and a space if multiple")
-    intolerances = StringField(
+    intolerances = TextAreaField(
         "Enter foods you are intolerant to. Separate by a comma and a space if multiple")
     submit_button = SubmitField("Confirm your query and press display recipes button")
 

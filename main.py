@@ -44,6 +44,7 @@ class User(db.Model, UserMixin):
                f" password: '{self.password}', email: '{self.email}')"
 
 
+
 class Receipts(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     grain = db.Column(db.Integer, default=0)
@@ -94,15 +95,15 @@ def index():
 
         if form.validate_on_submit():
             add_item(form)
-            items = get_items()  # why do we need this?
+            # items = get_items()
             return redirect("/")
             # return render_template("index.html", form=form, form1=form1,
             #                         items=items, popular=popular)
 
         if form1.validate_on_submit():
             attribute_session_id()
-            items = get_items()  # why do we need this?
-            popular = get_popular_items(5)  # why do we need this?
+            # items = get_items()
+            # popular = get_popular_items(5)
             return redirect("/")
             # return render_template("index.html", form=form, form1=form1,
             #                         items=items, popular=popular)
@@ -215,6 +216,13 @@ def findrec():
     else:
         return redirect(url_for("login"))
 
+@app.route("/my-profile")
+def my_profile():
+    name, username, email=get_name()
+    return render_template("my_profile.html", name=name,
+                                              username=username,
+                                              email=email)
+
 
 @ app.route("/register", methods=["GET", "POST"])
 def register():
@@ -296,6 +304,17 @@ def is_login_successful(form_data):
             return True
     else:
         return False
+
+
+def get_name():
+    current_id=current_user.id
+    my_user=User.query.filter_by(id=current_id).first()
+    if my_user is None:
+        return False
+    name=my_user.fname + " " + my_user.lname
+    username=my_user.uname
+    email=my_user.email
+    return name, username, email
 
 
 def add_item(form_data):

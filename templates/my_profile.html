@@ -16,12 +16,12 @@
                 </a>
 
                 {% if current_user.is_authenticated %}
-                    <li><a class="active" href="/">Home</a>
+                    <li><a href="/">Home</a>
                     <li><a href="find-recipe">Find recipe</a>
                     <li><a href="upload-receipt">Upload receipt</a>
                     <li><a href="my_lists">My shopping lists</a>
                     <li style="float:right"><a href="logout">Logout</a>
-                    <li style="float:right"><a href ="my-profile">My Profile</a>
+                    <li style="float:right"><a class="active" href ="my-profile">My Profile</a>
                 {% else %}
                     <li><a class="active" href="#">Home</a>
                     <li><a href="#">New Post</a>
@@ -30,53 +30,6 @@
                 {% endif %}
             </ul>
         </div><br><br>
-
-
-        <form  method="post">
-          {{ form.hidden_tag() }}
-
-          {{ form.item.label }} {{ form.item() }}
-          <br>
-          {{ form.submit_button() }}
-
-      </form><br>
-
-        <br>
-        <h2> The five items you most often buy </h2>
-        {% for index, row in popular.iterrows() %}
-        <br>
-
-          <div class="card-special">
-            <h5>{{ row["item"] }}</h5>
-            <br>
-          </div>
-
-
-        {% endfor %}
-        <br>
-        <h2> Your current list </h2>
-        {% for index, row in items.iterrows() %}
-        <br>
-          <div class="card">
-            <h5 style=float:left>{{ row["item"] }}</h5>
-            <br>
-            <form class="inline-form" method="post" action="{{ url_for('delete', item_id=row.id) }}">
-                <input class="btn" type="submit" name="delete" value="Delete">
-            </form>
-          </div>
-
-        {% endfor %}
-
-        <form  method="post">
-          {{ form1.hidden_tag() }}
-
-          <br>
-          {{ form1.submit_button() }}
-
-        </form><br><br>
-        <div class="footer">
-            <h6>Copyright 2020</h6>
-        </div>
-
-    </body>
-</html>
+<h2>Profile of {{name}} </h2><br>
+<h5>Your username {{username}}<h5><br>
+<h5>Your current email {{email}}<h5>
