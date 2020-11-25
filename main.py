@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
-from forms import RegistrationForm, LoginForm, receipt_upload, food_upload
+from forms import RegistrationForm, LoginForm, receipt_upload, food_upload, user_preference
 from forms import button_for_script, button1_for_script, Select_recipe, keyword
 from api_keys import APIKEY
 
@@ -37,6 +37,8 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100), nullable=False)
     receipts = db.relationship("Receipts", backref="op", lazy=True)
     items = db.relationship("Items", backref="opp", lazy=True)
+    num_of_items = db.Column(db.Integer, default=5)
+
 
     def __repr__(self):
         return f"User(id: '{self.id}', fname: '{self.fname}', " +\
@@ -219,6 +221,7 @@ def findrec():
 @app.route("/my-profile")
 def my_profile():
     name, username, email=get_name()
+    form = user_preference()
     return render_template("my_profile.html", name=name,
                                               username=username,
                                               email=email)

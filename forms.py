@@ -59,6 +59,9 @@ class keyword(Form):
         "Enter foods you are intolerant to. Separate by a comma and a space if multiple")
     submit_button = SubmitField("Confirm your query and press display recipes button")
 
+class user_preference(FlaskForm):
+    preference = Stringfield("Change the amount of default items displayed")
+    sumbit_button = SubmitField("Submit")
 
 """
 Advanced functionalities
