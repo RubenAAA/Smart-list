@@ -60,8 +60,8 @@ class keyword(Form):
     submit_button = SubmitField("Confirm your query and press display recipes button")
 
 class user_preference(FlaskForm):
-    preference = Stringfield("Change the amount of default items displayed")
-    sumbit_button = SubmitField("Submit")
+    preference = StringField("Change the amount of default items displayed")
+    submit_button = SubmitField("Submit")
 
 """
 Advanced functionalities

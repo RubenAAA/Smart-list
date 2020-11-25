@@ -37,7 +37,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100), nullable=False)
     receipts = db.relationship("Receipts", backref="op", lazy=True)
     items = db.relationship("Items", backref="opp", lazy=True)
-    num_of_items = db.Column(db.Integer, default=5)
+    #num_of_items = db.Column(db.Integer, default=5)
 
 
     def __repr__(self):
@@ -222,9 +222,16 @@ def findrec():
 def my_profile():
     name, username, email=get_name()
     form = user_preference()
+    if form.validate_on_submit():
+        return render_template("my_profile.html", name=name,
+                                                  username=username,
+                                                  email=email,
+                                                  form=form)
+
     return render_template("my_profile.html", name=name,
                                               username=username,
-                                              email=email)
+                                              email=email,
+                                              form=form)
 
 
 @ app.route("/register", methods=["GET", "POST"])
