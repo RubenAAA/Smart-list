@@ -37,7 +37,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100), nullable=False)
     receipts = db.relationship("Receipts", backref="op", lazy=True)
     items = db.relationship("Items", backref="opp", lazy=True)
-    # num_of_items = db.Column(db.Integer, default=5)
+    num_of_items = db.Column(db.Integer, default=5)
 
     def __repr__(self):
         return f"User(id: '{self.id}', fname: '{self.fname}', " +\
@@ -88,8 +88,10 @@ class Items(db.Model, UserMixin):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if current_user.is_authenticated:
+        current_id = current_user.id
+        my_user = User.query.filter_by(id=current_id).first()
         items = get_items()
-        popular = get_popular_items(5)
+        popular = get_popular_items(my_user.num_of_items)
         form = button_for_script()
         form1 = button1_for_script()
 
@@ -207,9 +209,9 @@ def findrec():
                        (9, id_df["name"][8]),
                        (10, id_df["name"][9])]
             form.recipe_chosen.choices = choices
-            if form.validate_on_submit():
-                n = form.recipe_chosen.data - 1
-                add_items_from_list(get_recipe_info(id_df["id"][n]),
+        if form.validate_on_submit():
+            n = form.recipe_chosen.data - 1
+            add_items_from_list(get_recipe_info(id_df["id"][n]),
                                     len(get_recipe_info(id_df["id"][n])))
         return render_template("find_recipe.html", form=form,
                                form_diet=form_diet)
@@ -217,15 +219,19 @@ def findrec():
         return redirect(url_for("login"))
 
 
-@app.route("/my-profile")
+@app.route("/my-profile", methods = ["GET", "POST"])
 def my_profile():
     name, username, email = get_name()
     form = user_preference()
     if form.validate_on_submit():
-        return render_template("my_profile.html", name=name,
-                                                  username=username,
-                                                  email=email,
-                                                  form=form)
+        pref = form.preference.data
+
+        current_id = current_user.id
+        my_user = User.query.filter_by(id=current_id).first()
+
+        my_user.num_of_items = pref
+        db.session.commit()
+        return redirect(url_for("index"))
 
     return render_template("my_profile.html", name=name,
                                               username=username,
@@ -381,6 +387,7 @@ def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
     }
     response = requests.request("GET", url, headers=headers, params=querys)
     response = response.json()
+    response
     recipe_ids = []
     recipe_names = []
     for i in range(0, number):
