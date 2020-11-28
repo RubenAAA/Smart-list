@@ -153,7 +153,7 @@ def my_lists():
             if form.recipe_chosen.data == 0:
                 items = get_items(0)
             else:
-                items = get_items(nd_df["session_id"][form.recipe_chosen.data])
+                items = get_items(nd_df["session_id"][form.recipe_chosen.data - 1])
 
         return render_template("my_lists.html", items=items, form=form)
     else:
