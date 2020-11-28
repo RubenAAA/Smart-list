@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm, Form
-from wtforms import StringField, SubmitField, PasswordField, RadioField, TextAreaField, IntegerField
+from wtforms import StringField, SubmitField, PasswordField, SelectField, TextAreaField, IntegerField
 from flask_wtf.file import FileField
 from wtforms.validators import DataRequired
 # We need the following two for the file upload forms:
@@ -43,12 +43,10 @@ class button1_for_script(FlaskForm):
     submit_button = SubmitField("Save List")
 
 
-"""
 class Select_recipe(Form):
-    recipe_chosen = RadioField(
-        'Choose the recipe you want to add to your shopping list', coerce=int)
-    submit_button = SubmitField('Submit')
-"""
+    recipe_chosen = SelectField(
+        'Choose the recipe you want view', coerce=int)
+    submit_button = SubmitField('Update list')
 
 
 class Trytest(Form):

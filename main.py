@@ -10,7 +10,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
 from forms import RegistrationForm, LoginForm, receipt_upload, user_preference
-from forms import button_for_script, button1_for_script, keyword, Trytest
+from forms import button_for_script, button1_for_script, keyword, Trytest, Select_recipe
 from api_keys import APIKEY
 
 app = Flask(__name__)
@@ -90,7 +90,7 @@ def index():
     if current_user.is_authenticated:
         current_id = current_user.id
         my_user = User.query.filter_by(id=current_id).first()
-        items = get_items()
+        items = get_items(0)
         popular = get_popular_items(my_user.num_of_items)
         form = button_for_script()
         form1 = button1_for_script()
@@ -98,7 +98,7 @@ def index():
         if form.validate_on_submit():
             add_item(form)
             # items = get_items()
-            return redirect("/")
+            return redirect(url_for("index"))
             # return render_template("index.html", form=form, form1=form1,
             #                         items=items, popular=popular)
 
@@ -106,7 +106,7 @@ def index():
             attribute_session_id()
             # items = get_items()
             # popular = get_popular_items(5)
-            return redirect("/")
+            return redirect(url_for("index"))
             # return render_template("index.html", form=form, form1=form1,
             #                         items=items, popular=popular)
 
@@ -127,10 +127,35 @@ def manual_receipt():
         return redirect(url_for("login"))
 
 
-@app.route("/my_lists")
+@app.route("/my-lists", methods=["GET", "POST"])
 def my_lists():
     if current_user.is_authenticated:
-        return render_template("my_lists.html")
+        form = Select_recipe()
+
+        df = pd.read_sql(Items.query.statement, db.session.bind)
+        nd_df = df[df["user_id"] == current_user.id]
+        nd_df = nd_df.drop_duplicates(subset='session_id', keep="last")
+        nd_df = nd_df.sort_values(by='session_id', ascending=False)
+        nd_df = nd_df.head().reset_index(drop=True)
+        for i in range(0, 4):
+            nd_df["date_created"][i] = str(nd_df["date_created"][i])[
+                :10] + " at " + str(nd_df["date_created"][i])[11:19]
+        items = get_items(0)
+
+        choices = [(0, "current list"),
+                   (1, "list from the " + str(nd_df["date_created"][0])),
+                   (2, "list from the " + str(nd_df["date_created"][1])),
+                   (3, "list from the " + str(nd_df["date_created"][2])),
+                   (4, "list from the " + str(nd_df["date_created"][3]))]
+        form.recipe_chosen.choices = choices
+
+        if form.validate_on_submit():
+            if form.recipe_chosen.data == 0:
+                items = get_items(0)
+            else:
+                items = get_items(nd_df["session_id"][form.recipe_chosen.data])
+
+        return render_template("my_lists.html", items=items, form=form)
     else:
         return redirect(url_for("login"))
 
@@ -358,12 +383,13 @@ def add_items_from_list(item_list, list_len):
     for i in range(0, list_len):
         product = Items(item=item_list[i],
                         date_created=datetime.datetime.now(),
-                        user_id=current_user.id)
+                        user_id=current_user.id,
+                        session_id=0)
         db.session.add(product)
         db.session.commit()
 
 
-def get_items(session_id=0):
+def get_items(session_id):
     df = pd.read_sql(Items.query.statement, db.session.bind)
     current_df = df[df["user_id"] == current_user.id]
     current_df = current_df[current_df["session_id"] == session_id]
@@ -380,11 +406,11 @@ def get_popular_items(num_of_items):
 
 def attribute_session_id():
     num_of_nuls = Items.query.filter_by(user_id=current_user.id).filter_by(session_id=0).count()
+    last_sid = Items.query.order_by(Items.session_id.desc()).first().session_id+1
     for i in range(0, num_of_nuls):
         list_of_null_sids = Items.query.filter_by(
             user_id=current_user.id).filter_by(session_id=0).first()
-        setattr(list_of_null_sids, 'session_id', Items.query.order_by(
-            Items.session_id.desc()).first().session_id+1)
+        setattr(list_of_null_sids, 'session_id', last_sid)
         db.session.commit()
 
 
