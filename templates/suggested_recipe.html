@@ -52,17 +52,12 @@
 
         <div class="content_section">
           <form  method="post">
-          {{ form_diet.hidden_tag() }}
+          {{ form_picture.hidden_tag() }}
 
-          {{ form_diet.query.label }} {{ form_diet.query() }}
-          <br>  <br>
-          {{ form_diet.diet.label }} {{ form_diet.diet() }}
-          <br>  <br>
-          {{ form_diet.excludeIngredients.label }} {{ form_diet.excludeIngredients() }}
-          <br>  <br>
-          {{ form_diet.intolerances.label }} {{ form_diet.intolerances() }}
+
+          {{ form_picture.food_picture.label }} {{ form_picture.food_picture() }}
           <br>
-          {{ form_diet.submit_button() }}
+          {{ form_picture.submit_button() }}
 
         </form><br><br>
       </div>
@@ -71,12 +66,12 @@
       <div class="content2_section", style="display: none;">
       <br><br>
         <form method="post">
-          {{ form2.hidden_tag() }}
+          {{ form.hidden_tag() }}
 
 
           <br>
-          {{ form2.number() }}
-          {{ form2.submit_button() }}
+          {{ form.number() }}
+          {{ form.submit_button() }}
 
       </form><br><br>
       </div>

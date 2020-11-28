@@ -73,7 +73,13 @@
         <form method="post">
           {{ form2.hidden_tag() }}
 
-
+          {% for i in range(0, 10) %}
+          Recipe number {{ i + 1 }} :
+          {{ choices[i][1] }}
+          {{ choices[i][2] }}
+          <br>
+          <br>
+            {% endfor %}
           <br>
           {{ form2.number() }}
           {{ form2.submit_button() }}

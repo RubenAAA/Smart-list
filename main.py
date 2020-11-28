@@ -9,8 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
-from forms import RegistrationForm, LoginForm, receipt_upload, food_upload, user_preference
-from forms import button_for_script, button1_for_script, Select_recipe, keyword
+from forms import RegistrationForm, LoginForm, receipt_upload, user_preference
+from forms import button_for_script, button1_for_script, keyword, Trytest
 from api_keys import APIKEY
 
 app = Flask(__name__)
@@ -162,29 +162,34 @@ def receipt():
         # Scan receipt and upload its contents
     else:
         return redirect(url_for("login"))
-"""
 
 
-@app.route("/suggested-recipe")
+
+@app.route("/suggested-recipe", methods=["GET", "POST"])
 def sugrec():
     if current_user.is_authenticated:
         # Recipe from picture
         form_picture = food_upload()
-        form = Select_recipe()
+        form = Trytest()
         # this also returns nutritional info
-        df = get_recipe_id_from_picture(form_picture.food_picture.data)
-        choices = []
-        for i in range(0, len(df)):
-            choices.append((i, df["name"][i]))
-        form.recipe_chosen.choices = choices
+        if form_picture.validate_on_submit():
+            df = get_recipe_id_from_picture(form_picture.food_picture.data)
+            choices = []
+            for i in range(0, len(df)):
+                choices.append((i, df["name"][i]))
+            return render_template("suggested_recipe0.html",
+                                   form_picture=form_picture, form=form,
+                                   choices=choices)
         if form.validate_on_submit():
-            n = form.recipe_chosen.data
+            df = get_recipe_id_from_picture(form_picture.food_picture.data)
+            n = form.number.data - 1
             add_items_from_list(get_recipe_info(df["id"][n]),
                                 len(get_recipe_info(df["id"][n])))
-        return render_template("find_recipe.html", form=form,
+        return render_template("suggested_recipe.html", form=form,
                                form_picture=form_picture)
     else:
         return redirect(url_for("login"))
+"""
 
 
 @app.route("/find-recipe", methods=["GET", "POST"])
@@ -192,7 +197,7 @@ def findrec():
     if current_user.is_authenticated:
         # Find recipe from keyword
         form_diet = keyword()
-        form = Select_recipe()
+        form2 = Trytest()
         if form_diet.validate_on_submit():
             id_df = get_recipe_id(form_diet.query.data, form_diet.diet.data,
                                   form_diet.excludeIngredients.data,
@@ -208,18 +213,26 @@ def findrec():
                        (8, id_df["name"][7]),
                        (9, id_df["name"][8]),
                        (10, id_df["name"][9])]
-            form.recipe_chosen.choices = choices
-        if form.validate_on_submit():
-            n = form.recipe_chosen.data - 1
+            return render_template("find_recipe0.html",
+                                   form_diet=form_diet, form2=form2,
+                                   choices=choices)
+
+        if form2.validate_on_submit():
+            n = form2.number.data - 1
+            id_df = get_recipe_id(form_diet.query.data, form_diet.diet.data,
+                                  form_diet.excludeIngredients.data,
+                                  form_diet.intolerances.data,
+                                  10)  # idk why but this is necessary
             add_items_from_list(get_recipe_info(id_df["id"][n]),
-                                    len(get_recipe_info(id_df["id"][n])))
-        return render_template("find_recipe.html", form=form,
-                               form_diet=form_diet)
+                                len(get_recipe_info(id_df["id"][n])))
+            return redirect(url_for("index"))
+        return render_template("find_recipe.html",
+                               form_diet=form_diet, form2=form2)
     else:
         return redirect(url_for("login"))
 
 
-@app.route("/my-profile", methods = ["GET", "POST"])
+@app.route("/my-profile", methods=["GET", "POST"])
 def my_profile():
     name, username, email = get_name()
     form = user_preference()
@@ -234,9 +247,9 @@ def my_profile():
         return redirect(url_for("index"))
 
     return render_template("my_profile.html", name=name,
-                                              username=username,
-                                              email=email,
-                                              form=form)
+                           username=username,
+                           email=email,
+                           form=form)
 
 
 @ app.route("/register", methods=["GET", "POST"])
@@ -413,34 +426,29 @@ def get_recipe_info(idn):
     return ingredients
 
 
+"""
 def get_recipe_id_from_picture(food_picture):
     url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/images/analyze"
-    payload = """-----011000010111000001101001\r
-    Content-Disposition: form-data; name=\"file\"\r
-    \r
-    """ + str(food_picture) + """
-    \r
-    -----011000010111000001101001--\r
-    \r
-    """
+    payload = food_picture
     headers = {
-        'content-type': "multipart/form-data; boundary=---011000010111000001101001",
+        'content-type': "multipart/form-data",
         'x-rapidapi-key': "9da2f73c89msh93d02299250d2d3p11c66djsnf01090a6a4b6",
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("POST", url, data=payload, headers=headers)
     response = response.json()
+    response
     recipe_ids = []
     recipe_names = []
 
-    nutrition = {'values': [response["calories"]["value"],
-                            response["fat"]["value"],
-                            response["protein"]["value"],
-                            response["carbs"]["value"]],
-                 'unit': [response["calories"]["unit"],
-                          response["fat"]["unit"],
-                          response["protein"]["unit"],
-                          response["carbs"]["unit"]]}
+    nutrition = {'values': [response["nutrition"]["calories"]["value"],
+                            response["nutrition"]["fat"]["value"],
+                            response["nutrition"]["protein"]["value"],
+                            response["nutrition"]["carbs"]["value"]],
+                 'unit': [response["nutrition"]["calories"]["unit"],
+                          response["nutrition"]["fat"]["unit"],
+                          response["nutrition"]["protein"]["unit"],
+                          response["nutrition"]["carbs"]["unit"]]}
 
     food_nutrition = pd.DataFrame(nutrition, columns=['value', 'unit'])
 
@@ -452,6 +460,7 @@ def get_recipe_id_from_picture(food_picture):
     food_nutrition["name"] = recipe_names
 
     return food_nutrition
+"""
 
 
 if __name__ == "__main__":
