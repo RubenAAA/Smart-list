@@ -26,11 +26,25 @@
                     <li><a class="active" href="#">Home</a>
                     <li><a href="#">New Post</a>
                     <li style="float:right"><a href="login">Login</a>
-                    <li style="float:right"><a href="registration">Registration</a>
+                    <li style="float:right"><a href="register">Registration</a>
                 {% endif %}
             </ul>
         </div><br><br>
 
+        <div class="container" style="min-height:100% width:80%">
+        	{% with messages = get_flashed_messages() %}
+        	  {% if messages %}
+        	    {% for message in messages %}
+        		  <div class="alert alert-warning alert-dismissible" role="alert">
+        		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        			{{message}}
+        		  </div>
+        		{% endfor %}
+        	  {% endif %}
+        	{% endwith %}
+        </div>
+
+        <h5>Add a product to your shopping list</h5><br>
 
         <form  method="post">
           {{ form.hidden_tag() }}
@@ -45,38 +59,40 @@
         <h2> The five items you most often buy </h2>
         {% for index, row in popular.iterrows() %}
         <br>
-
           <div class="card-special">
-            <h5>{{ row["item"] }}</h5>
+
+            <h3 class="card-title">{{ row["item"] }}</h3>
+            <img class="card-img-bottom" src={{ row["path"] }} class="img" alt="Card image cap">
+
             <br>
           </div>
+      {% endfor %}
+  </div>
+</div><br><br>
 
 
-        {% endfor %}
-        <br>
-        <h2> Your current list </h2>
-        {% for index, row in items.iterrows() %}
-        <br>
-          <div class="card">
-            <h5 style=float:left>{{ row["item"] }}</h5>
-            <br>
-            <form class="inline-form" method="post" action="{{ url_for('delete', item_id=row.id) }}">
-                <input class="btn" type="submit" name="delete" value="Delete">
-            </form>
-          </div>
-
-        {% endfor %}
-
-        <form  method="post">
-          {{ form1.hidden_tag() }}
-
+          <h2> Your current list </h2>
+          {% for index, row in items.iterrows() %}
           <br>
-          {{ form1.submit_button() }}
+            <div class="card">
+              <h5>{{ row["item"] }}</h5>
+              <br>
+              <form class="inline-form" method="post" action="{{ url_for('delete', item_id=row.id) }}">
+                  <input class="btn" type="submit" name="delete" value="Delete">
+              </form>
+            </div>
 
-        </form><br><br>
-        <div class="footer">
-            <h6>Copyright 2020</h6>
-        </div>
+          {% endfor %}
 
+          <form  method="post">
+            {{ form1.hidden_tag() }}
+
+            <br>
+            {{ form1.submit_button() }}
+
+          </form><br><br>
+          <div class="footer">
+              <h6>Copyright 2020</h6>
+          </div>
     </body>
 </html>

@@ -2,14 +2,14 @@ import pandas as pd
 import requests
 from PIL import Image
 from io import BytesIO
-# import os
+import os
 import datetime
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
-from forms import RegistrationForm, LoginForm, receipt_upload, food_upload, user_preference
+from forms import RegistrationForm, LoginForm, receipt_upload, food_upload
 from forms import button_for_script, button1_for_script, Select_recipe, keyword
 from api_keys import APIKEY
 
@@ -37,7 +37,6 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100), nullable=False)
     receipts = db.relationship("Receipts", backref="op", lazy=True)
     items = db.relationship("Items", backref="opp", lazy=True)
-    # num_of_items = db.Column(db.Integer, default=5)
 
     def __repr__(self):
         return f"User(id: '{self.id}', fname: '{self.fname}', " +\
@@ -85,6 +84,11 @@ class Items(db.Model, UserMixin):
                f" user_id: '{self.user_id}')"
 
 
+###########
+# routes
+###########
+
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     if current_user.is_authenticated:
@@ -125,7 +129,7 @@ def manual_receipt():
         return redirect(url_for("login"))
 
 
-@app.route("/my_lists")
+@app.route("/my-profile/my-lists")
 def my_lists():
     if current_user.is_authenticated:
         return render_template("my_lists.html")
@@ -216,21 +220,12 @@ def findrec():
     else:
         return redirect(url_for("login"))
 
-
 @app.route("/my-profile")
 def my_profile():
-    name, username, email = get_name()
-    form = user_preference()
-    if form.validate_on_submit():
-        return render_template("my_profile.html", name=name,
-                                                  username=username,
-                                                  email=email,
-                                                  form=form)
-
+    name, username, email=get_name()
     return render_template("my_profile.html", name=name,
                                               username=username,
-                                              email=email,
-                                              form=form)
+                                              email=email)
 
 
 @ app.route("/register", methods=["GET", "POST"])
@@ -241,6 +236,7 @@ def register():
     if form.validate_on_submit():
         registration_worked = register_user(form)
         if registration_worked:
+            flash("Registration successful. Please login")
             return redirect(url_for("login"))
     return render_template("register.html", form=form, User=User)
 
@@ -252,12 +248,14 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         if is_login_successful(form):
+            flash("Login successful")
             return redirect(url_for("index"))
         else:
             if User.query.filter_by(email=form.email.data).count() > 0:
                 flash("Login unsuccessful, please check your credentials"
                       "and try again")
             else:
+                flash("Unknown credentials. Do you want to create an account?")
                 return redirect(url_for("register"))
     return render_template("login.html", form=form, User=User)
 
@@ -268,10 +266,9 @@ def logout():
     logout_user()
     return redirect(url_for("login"))
 
-###########
+############
 # functions
-###########
-
+############
 
 def register_user(form_data):
     def email_already_taken(email):
@@ -316,13 +313,13 @@ def is_login_successful(form_data):
 
 
 def get_name():
-    current_id = current_user.id
-    my_user = User.query.filter_by(id=current_id).first()
+    current_id=current_user.id
+    my_user=User.query.filter_by(id=current_id).first()
     if my_user is None:
         return False
-    name = my_user.fname + " " + my_user.lname
-    username = my_user.uname
-    email = my_user.email
+    name=my_user.fname + " " + my_user.lname
+    username=my_user.uname
+    email=my_user.email
     return name, username, email
 
 
@@ -354,9 +351,38 @@ def get_items(session_id=0):
 def get_popular_items(num_of_items):
     df = pd.read_sql(Items.query.statement, db.session.bind)
     current_df = df[df["user_id"] == current_user.id]
-    top_n_list = current_df['item'].value_counts()[:num_of_items].index.tolist()
-    top_n_df = pd.DataFrame(top_n_list, columns=['item'])
+    top_n_lst = current_df['item'].value_counts()[:num_of_items].index.tolist()
+    img_lst=[]
+    for i in top_n_lst:
+        img_url=search_img(i)
+        filename = i + ".jpg"
+        filepath = save_img(img_url, "static/data/", filename)
+        img_lst.append(filepath)
+    data = {"item": top_n_lst,
+            "path": img_lst}
+    top_n_df = pd.DataFrame(data, columns = ["item", "path"])
     return top_n_df
+
+
+def search_img(search_query):
+    access_key = "KtozeG1fDJdYwiTtQRpDr0XVaSb_NyT_mKbBQ2gI1lg"
+    url = "https://api.unsplash.com/search/photos/"
+    parameter = {"client_id" : access_key,
+                 "query" : search_query}
+    r = requests.get(url, params=parameter)
+    data=r.json()
+    url_raw = data["results"][0]["urls"]["small"]
+    return url_raw
+
+
+
+def save_img(img_url, folder_prefix, filename):
+    img = requests.get(img_url)
+    file_path = os.path.join(folder_prefix, filename)
+    with open(file_path, "wb") as file:
+        file.write(img.content)
+    return file_path
+
 
 
 def attribute_session_id():
@@ -380,7 +406,6 @@ def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers, params=querys)
-    response = response.json()
     recipe_ids = []
     recipe_names = []
     for i in range(0, number):
@@ -398,7 +423,6 @@ def get_recipe_info(idn):
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers)
-    response = response.json()
 
     ingredients = []
     for i in range(0, len(response["extendedIngredients"])):
@@ -422,7 +446,6 @@ def get_recipe_id_from_picture(food_picture):
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("POST", url, data=payload, headers=headers)
-    response = response.json()
     recipe_ids = []
     recipe_names = []
 

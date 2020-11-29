@@ -47,23 +47,24 @@ p {
   border: 2px solid green;
   background-color: #f2f2f2;
   text-align: center;
+
 }
+/* the n most bought items */
 .card-special {
-    display: block;
-    margin-left:100px;
-    margin-right:100px;
-    padding-left: 40px;
-    padding-right: 40px;
-    padding-top: 20px;
-    height: 60px;
-    background: url("https://images.unsplash.com/photo-1504548840739-580b10ae7715?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxzZWFyY2h8OXx8Y2FsbSUyMGJhY2tncm91bmR8ZW58MHx8MHw%3D&auto=format&fit=crop&w=700&q=60");
+    height:150px;
+    width:200px;
+    margin: auto;
+
     border: 2px solid green;
 
     text-align: center;
+    background:grey;
+    padding: 0 10px;
 }
-.card-img-top {
-    width: 120%;
-    height: 60px;
+
+.card-img-bottom {
+    width: 40%;
+    height: 60%;
     object-fit: cover;
 }
 
