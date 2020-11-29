@@ -17,6 +17,7 @@
 
                 {% if current_user.is_authenticated %}
                     <li><a href="/">Home</a>
+                    <li><a href="my-lists">Previous lists</a>
                     <li><a href="find-recipe">Find recipe</a>
                     <li><a href="upload-receipt">Upload receipt</a>
                     <li><a href="#">Analytics</a>
@@ -30,4 +31,31 @@
                 {% endif %}
             </ul>
         </div><br><br>
-<h2> {{session.username }} shopping lists</h2>
+
+<h2> View your five most recent lists. </h2>
+  <br>  <br>
+<form  method="post">
+  {{ form.hidden_tag() }}
+
+  {{ form.recipe_chosen() }}
+  <br>  <br>
+  {{ form.submit_button() }}
+
+</form><br>
+{% for index, row in items.iterrows() %}
+<br>
+  <div class="card">
+    <h5 style=float:left>{{ row["item"] }}</h5>
+    <br>
+    <form class="inline-form" method="post" action="{{ url_for('delete', item_id=row.id) }}">
+        <input class="btn" type="submit" name="delete" value="Delete">
+    </form>
+  </div>
+
+{% endfor %}
+  <br>
+  <div class="footer">
+      <h6>Copyright 2020</h6>
+  </div>
+</body>
+</html>

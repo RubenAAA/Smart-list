@@ -18,11 +18,11 @@
                 {% if current_user.is_authenticated %}
                     <li><a href="/">Home</a>
                     <li><a href="my-lists">Previous lists</a>
-                    <li><a href="find-recipe">Find recipe</a>
+                    <li><a class="active" href="find-recipe">Find recipe</a>
                     <li><a href="upload-receipt">Upload receipt</a>
                     <li><a href="#">Analytics</a>
                     <li style="float:right"><a href="logout">Logout</a>
-                    <li style="float:right"><a class="active" href ="my-profile">My Profile</a>
+                    <li style="float:right"><a href ="#">My Profile</a>
                 {% else %}
                     <li><a class="active" href="#">Home</a>
                     <li><a href="#">New Post</a>
@@ -30,17 +30,61 @@
                     <li style="float:right"><a href="registration">Registration</a>
                 {% endif %}
             </ul>
-        </div><br><br>
-<h2>Profile of {{name}} </h2><br>
-<h5>Your username {{username}}<h5><br>
-<h5>Your current email {{email}}<h5>
+        </div><br>
 
-<h4> Change User Preference </h4>
-<form  method="POST">
-  {{ form.hidden_tag() }}
+<h3>Find Recipe</h3>
+<h6>At this page you can find any recipe you want</h6><br>
 
-  {{ form.preference.label }} {{ form.preference() }}
-  <br>
-  {{ form.submit_button() }}
+<script type="text/javascript">
+        function toggle_display(){
+          el = document.querySelector('.content_section');
+          el2 = document.querySelector('.content2_section');
 
-</form><br>
+          if(el.style.display == 'none'){
+              el.style.display = 'block'
+              el2.style.display = "none"
+          }else{
+             el.style.display = 'none'
+             el2.style.display = "block"
+          }
+        }
+</script>
+
+
+        <div class="content_section">
+            <form  method="post">
+            {{ form_picture.hidden_tag() }}
+
+
+            {{ form_picture.food_picture.label }} {{ form_picture.food_picture() }}
+            <br>
+            {{ form_picture.submit_button() }}
+
+          </form><br><br>
+      </div>
+      <br><br>
+        <button onclick="toggle_display()">Display recipes</button>
+      <div class="content2_section", style="display: none;">
+      <br><br>
+      <form method="post">
+        {{ form.hidden_tag() }}
+
+        {% for i in range(0, 10) %}
+        Recipe number {{ i + 1 }} :
+        {{ choices[i][1] }}
+        {{ choices[i][2] }}
+        <br>
+        <br>
+          {% endfor %}
+        <br>
+        {{ form.number() }}
+        {{ form.submit_button() }}
+
+    </form><br><br>
+      </div>
+      <div class="footer">
+          <h6>Copyright 2020</h6>
+      </div>
+
+  </body>
+</html>

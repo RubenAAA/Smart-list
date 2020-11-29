@@ -9,8 +9,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
+<<<<<<< HEAD
 from forms import RegistrationForm, LoginForm, receipt_upload, food_upload
 from forms import button_for_script, button1_for_script, Select_recipe, keyword
+=======
+from forms import RegistrationForm, LoginForm, receipt_upload, user_preference
+from forms import button_for_script, button1_for_script, keyword, Trytest, Select_recipe
+>>>>>>> 38e9d3711fcc2bb90ca0917c1da8fcb59518ab92
 from api_keys import APIKEY
 
 app = Flask(__name__)
@@ -37,6 +42,10 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100), nullable=False)
     receipts = db.relationship("Receipts", backref="op", lazy=True)
     items = db.relationship("Items", backref="opp", lazy=True)
+<<<<<<< HEAD
+=======
+    num_of_items = db.Column(db.Integer, default=5)
+>>>>>>> 38e9d3711fcc2bb90ca0917c1da8fcb59518ab92
 
     def __repr__(self):
         return f"User(id: '{self.id}', fname: '{self.fname}', " +\
@@ -92,15 +101,17 @@ class Items(db.Model, UserMixin):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if current_user.is_authenticated:
-        items = get_items()
-        popular = get_popular_items(5)
+        current_id = current_user.id
+        my_user = User.query.filter_by(id=current_id).first()
+        items = get_items(0)
+        popular = get_popular_items(my_user.num_of_items)
         form = button_for_script()
         form1 = button1_for_script()
 
         if form.validate_on_submit():
             add_item(form)
             # items = get_items()
-            return redirect("/")
+            return redirect(url_for("index"))
             # return render_template("index.html", form=form, form1=form1,
             #                         items=items, popular=popular)
 
@@ -108,7 +119,7 @@ def index():
             attribute_session_id()
             # items = get_items()
             # popular = get_popular_items(5)
-            return redirect("/")
+            return redirect(url_for("index"))
             # return render_template("index.html", form=form, form1=form1,
             #                         items=items, popular=popular)
 
@@ -129,10 +140,39 @@ def manual_receipt():
         return redirect(url_for("login"))
 
 
+<<<<<<< HEAD
 @app.route("/my-profile/my-lists")
+=======
+@app.route("/my-lists", methods=["GET", "POST"])
+>>>>>>> 38e9d3711fcc2bb90ca0917c1da8fcb59518ab92
 def my_lists():
     if current_user.is_authenticated:
-        return render_template("my_lists.html")
+        form = Select_recipe()
+
+        df = pd.read_sql(Items.query.statement, db.session.bind)
+        nd_df = df[df["user_id"] == current_user.id]
+        nd_df = nd_df.drop_duplicates(subset='session_id', keep="last")
+        nd_df = nd_df.sort_values(by='session_id', ascending=False)
+        nd_df = nd_df.head().reset_index(drop=True)
+        for i in range(0, 4):
+            nd_df["date_created"][i] = str(nd_df["date_created"][i])[
+                :10] + " at " + str(nd_df["date_created"][i])[11:19]
+        items = get_items(0)
+
+        choices = [(0, "current list"),
+                   (1, "list from the " + str(nd_df["date_created"][0])),
+                   (2, "list from the " + str(nd_df["date_created"][1])),
+                   (3, "list from the " + str(nd_df["date_created"][2])),
+                   (4, "list from the " + str(nd_df["date_created"][3]))]
+        form.recipe_chosen.choices = choices
+
+        if form.validate_on_submit():
+            if form.recipe_chosen.data == 0:
+                items = get_items(0)
+            else:
+                items = get_items(nd_df["session_id"][form.recipe_chosen.data - 1])
+
+        return render_template("my_lists.html", items=items, form=form)
     else:
         return redirect(url_for("login"))
 
@@ -164,29 +204,34 @@ def receipt():
         # Scan receipt and upload its contents
     else:
         return redirect(url_for("login"))
-"""
 
 
-@app.route("/suggested-recipe")
+
+@app.route("/suggested-recipe", methods=["GET", "POST"])
 def sugrec():
     if current_user.is_authenticated:
         # Recipe from picture
         form_picture = food_upload()
-        form = Select_recipe()
+        form = Trytest()
         # this also returns nutritional info
-        df = get_recipe_id_from_picture(form_picture.food_picture.data)
-        choices = []
-        for i in range(0, len(df)):
-            choices.append((i, df["name"][i]))
-        form.recipe_chosen.choices = choices
+        if form_picture.validate_on_submit():
+            df = get_recipe_id_from_picture(form_picture.food_picture.data)
+            choices = []
+            for i in range(0, len(df)):
+                choices.append((i, df["name"][i]))
+            return render_template("suggested_recipe0.html",
+                                   form_picture=form_picture, form=form,
+                                   choices=choices)
         if form.validate_on_submit():
-            n = form.recipe_chosen.data
+            df = get_recipe_id_from_picture(form_picture.food_picture.data)
+            n = form.number.data - 1
             add_items_from_list(get_recipe_info(df["id"][n]),
                                 len(get_recipe_info(df["id"][n])))
-        return render_template("find_recipe.html", form=form,
+        return render_template("suggested_recipe.html", form=form,
                                form_picture=form_picture)
     else:
         return redirect(url_for("login"))
+"""
 
 
 @app.route("/find-recipe", methods=["GET", "POST"])
@@ -194,7 +239,7 @@ def findrec():
     if current_user.is_authenticated:
         # Find recipe from keyword
         form_diet = keyword()
-        form = Select_recipe()
+        form2 = Trytest()
         if form_diet.validate_on_submit():
             id_df = get_recipe_id(form_diet.query.data, form_diet.diet.data,
                                   form_diet.excludeIngredients.data,
@@ -210,22 +255,52 @@ def findrec():
                        (8, id_df["name"][7]),
                        (9, id_df["name"][8]),
                        (10, id_df["name"][9])]
-            form.recipe_chosen.choices = choices
-            if form.validate_on_submit():
-                n = form.recipe_chosen.data - 1
-                add_items_from_list(get_recipe_info(id_df["id"][n]),
-                                    len(get_recipe_info(id_df["id"][n])))
-        return render_template("find_recipe.html", form=form,
-                               form_diet=form_diet)
+            return render_template("find_recipe0.html",
+                                   form_diet=form_diet, form2=form2,
+                                   choices=choices)
+
+        if form2.validate_on_submit():
+            n = form2.number.data - 1
+            id_df = get_recipe_id(form_diet.query.data, form_diet.diet.data,
+                                  form_diet.excludeIngredients.data,
+                                  form_diet.intolerances.data,
+                                  10)  # idk why but this is necessary
+            add_items_from_list(get_recipe_info(id_df["id"][n]),
+                                len(get_recipe_info(id_df["id"][n])))
+            return redirect(url_for("index"))
+        return render_template("find_recipe.html",
+                               form_diet=form_diet, form2=form2)
     else:
         return redirect(url_for("login"))
 
+<<<<<<< HEAD
 @app.route("/my-profile")
 def my_profile():
     name, username, email=get_name()
     return render_template("my_profile.html", name=name,
                                               username=username,
                                               email=email)
+=======
+
+@app.route("/my-profile", methods=["GET", "POST"])
+def my_profile():
+    name, username, email = get_name()
+    form = user_preference()
+    if form.validate_on_submit():
+        pref = form.preference.data
+
+        current_id = current_user.id
+        my_user = User.query.filter_by(id=current_id).first()
+
+        my_user.num_of_items = pref
+        db.session.commit()
+        return redirect(url_for("index"))
+
+    return render_template("my_profile.html", name=name,
+                           username=username,
+                           email=email,
+                           form=form)
+>>>>>>> 38e9d3711fcc2bb90ca0917c1da8fcb59518ab92
 
 
 @ app.route("/register", methods=["GET", "POST"])
@@ -336,12 +411,13 @@ def add_items_from_list(item_list, list_len):
     for i in range(0, list_len):
         product = Items(item=item_list[i],
                         date_created=datetime.datetime.now(),
-                        user_id=current_user.id)
+                        user_id=current_user.id,
+                        session_id=0)
         db.session.add(product)
         db.session.commit()
 
 
-def get_items(session_id=0):
+def get_items(session_id):
     df = pd.read_sql(Items.query.statement, db.session.bind)
     current_df = df[df["user_id"] == current_user.id]
     current_df = current_df[current_df["session_id"] == session_id]
@@ -387,11 +463,11 @@ def save_img(img_url, folder_prefix, filename):
 
 def attribute_session_id():
     num_of_nuls = Items.query.filter_by(user_id=current_user.id).filter_by(session_id=0).count()
+    last_sid = Items.query.order_by(Items.session_id.desc()).first().session_id+1
     for i in range(0, num_of_nuls):
         list_of_null_sids = Items.query.filter_by(
             user_id=current_user.id).filter_by(session_id=0).first()
-        setattr(list_of_null_sids, 'session_id', Items.query.order_by(
-            Items.session_id.desc()).first().session_id+1)
+        setattr(list_of_null_sids, 'session_id', last_sid)
         db.session.commit()
 
 
@@ -406,6 +482,11 @@ def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers, params=querys)
+<<<<<<< HEAD
+=======
+    response = response.json()
+    response
+>>>>>>> 38e9d3711fcc2bb90ca0917c1da8fcb59518ab92
     recipe_ids = []
     recipe_names = []
     for i in range(0, number):
@@ -430,33 +511,32 @@ def get_recipe_info(idn):
     return ingredients
 
 
+"""
 def get_recipe_id_from_picture(food_picture):
     url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/images/analyze"
-    payload = """-----011000010111000001101001\r
-    Content-Disposition: form-data; name=\"file\"\r
-    \r
-    """ + str(food_picture) + """
-    \r
-    -----011000010111000001101001--\r
-    \r
-    """
+    payload = food_picture
     headers = {
-        'content-type': "multipart/form-data; boundary=---011000010111000001101001",
+        'content-type': "multipart/form-data",
         'x-rapidapi-key': "9da2f73c89msh93d02299250d2d3p11c66djsnf01090a6a4b6",
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("POST", url, data=payload, headers=headers)
+<<<<<<< HEAD
+=======
+    response = response.json()
+    response
+>>>>>>> 38e9d3711fcc2bb90ca0917c1da8fcb59518ab92
     recipe_ids = []
     recipe_names = []
 
-    nutrition = {'values': [response["calories"]["value"],
-                            response["fat"]["value"],
-                            response["protein"]["value"],
-                            response["carbs"]["value"]],
-                 'unit': [response["calories"]["unit"],
-                          response["fat"]["unit"],
-                          response["protein"]["unit"],
-                          response["carbs"]["unit"]]}
+    nutrition = {'values': [response["nutrition"]["calories"]["value"],
+                            response["nutrition"]["fat"]["value"],
+                            response["nutrition"]["protein"]["value"],
+                            response["nutrition"]["carbs"]["value"]],
+                 'unit': [response["nutrition"]["calories"]["unit"],
+                          response["nutrition"]["fat"]["unit"],
+                          response["nutrition"]["protein"]["unit"],
+                          response["nutrition"]["carbs"]["unit"]]}
 
     food_nutrition = pd.DataFrame(nutrition, columns=['value', 'unit'])
 
@@ -468,6 +548,7 @@ def get_recipe_id_from_picture(food_picture):
     food_nutrition["name"] = recipe_names
 
     return food_nutrition
+"""
 
 
 if __name__ == "__main__":

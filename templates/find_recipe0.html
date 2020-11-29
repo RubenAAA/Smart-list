@@ -22,9 +22,10 @@
                     <li><a href="upload-receipt">Upload receipt</a>
                     <li><a href="#">Analytics</a>
                     <li style="float:right"><a href="logout">Logout</a>
-                    <li style="float:right"><a href "my-profile">My Profile</a>
+                    <li style="float:right"><a href ="#">My Profile</a>
                 {% else %}
                     <li><a class="active" href="#">Home</a>
+                    <li><a href="#">New Post</a>
                     <li style="float:right"><a href="login">Login</a>
                     <li style="float:right"><a href="registration">Registration</a>
                 {% endif %}
@@ -73,7 +74,13 @@
         <form method="post">
           {{ form2.hidden_tag() }}
 
-
+          {% for i in range(0, 10) %}
+          Recipe number {{ i + 1 }} :
+          {{ choices[i][1] }}
+          {{ choices[i][2] }}
+          <br>
+          <br>
+            {% endfor %}
           <br>
           {{ form2.number() }}
           {{ form2.submit_button() }}
