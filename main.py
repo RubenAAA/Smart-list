@@ -9,13 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
-<<<<<<< HEAD
-from forms import RegistrationForm, LoginForm, receipt_upload, food_upload
-from forms import button_for_script, button1_for_script, Select_recipe, keyword
-=======
 from forms import RegistrationForm, LoginForm, receipt_upload, user_preference
 from forms import button_for_script, button1_for_script, keyword, Trytest, Select_recipe
->>>>>>> 38e9d3711fcc2bb90ca0917c1da8fcb59518ab92
 from api_keys import APIKEY
 
 app = Flask(__name__)
@@ -24,10 +19,9 @@ app.config["SECRET_KEY"] = "enter-a-hard-to-guess-string"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # To change
 db = SQLAlchemy(app)  # To change
 bcrypt = Bcrypt(app)
+
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
@@ -42,10 +36,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100), nullable=False)
     receipts = db.relationship("Receipts", backref="op", lazy=True)
     items = db.relationship("Items", backref="opp", lazy=True)
-<<<<<<< HEAD
-=======
-    num_of_items = db.Column(db.Integer, default=5)
->>>>>>> 38e9d3711fcc2bb90ca0917c1da8fcb59518ab92
+    # num_of_items = db.Column(db.Integer, default=5)
 
     def __repr__(self):
         return f"User(id: '{self.id}', fname: '{self.fname}', " +\
@@ -99,12 +90,13 @@ class Items(db.Model, UserMixin):
 
 
 @app.route("/", methods=["GET", "POST"])
+@login_required
 def index():
     if current_user.is_authenticated:
         current_id = current_user.id
         my_user = User.query.filter_by(id=current_id).first()
         items = get_items(0)
-        popular = get_popular_items(my_user.num_of_items)
+        popular = get_popular_items(5) #User.num_of_items)
         form = button_for_script()
         form1 = button1_for_script()
 
@@ -140,11 +132,7 @@ def manual_receipt():
         return redirect(url_for("login"))
 
 
-<<<<<<< HEAD
-@app.route("/my-profile/my-lists")
-=======
 @app.route("/my-lists", methods=["GET", "POST"])
->>>>>>> 38e9d3711fcc2bb90ca0917c1da8fcb59518ab92
 def my_lists():
     if current_user.is_authenticated:
         form = Select_recipe()
@@ -273,14 +261,6 @@ def findrec():
     else:
         return redirect(url_for("login"))
 
-<<<<<<< HEAD
-@app.route("/my-profile")
-def my_profile():
-    name, username, email=get_name()
-    return render_template("my_profile.html", name=name,
-                                              username=username,
-                                              email=email)
-=======
 
 @app.route("/my-profile", methods=["GET", "POST"])
 def my_profile():
@@ -293,14 +273,15 @@ def my_profile():
         my_user = User.query.filter_by(id=current_id).first()
 
         my_user.num_of_items = pref
+
         db.session.commit()
         return redirect(url_for("index"))
+    return render_template("my_profile.html",
+                            name=name,
+                            username=username,
+                            email=email,
+                            form=form)
 
-    return render_template("my_profile.html", name=name,
-                           username=username,
-                           email=email,
-                           form=form)
->>>>>>> 38e9d3711fcc2bb90ca0917c1da8fcb59518ab92
 
 
 @ app.route("/register", methods=["GET", "POST"])
@@ -482,11 +463,8 @@ def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers, params=querys)
-<<<<<<< HEAD
-=======
     response = response.json()
     response
->>>>>>> 38e9d3711fcc2bb90ca0917c1da8fcb59518ab92
     recipe_ids = []
     recipe_names = []
     for i in range(0, number):
@@ -521,11 +499,8 @@ def get_recipe_id_from_picture(food_picture):
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("POST", url, data=payload, headers=headers)
-<<<<<<< HEAD
-=======
     response = response.json()
     response
->>>>>>> 38e9d3711fcc2bb90ca0917c1da8fcb59518ab92
     recipe_ids = []
     recipe_names = []
 

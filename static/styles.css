@@ -2,7 +2,11 @@ body {
   text-align: center;
   font-family: Arial, Helvetica, sans-serif;
   color: black;
-  background-image: url("https://images.unsplash.com/photo-1495195134817-aeb325a55b65?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTd8fGZvb2R8ZW58MHx8MHw%3D&auto=format&fit=crop&w=700&q=60");
+  background: url("https://images.unsplash.com/photo-1495195134817-aeb325a55b65?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTd8fGZvb2R8ZW58MHx8MHw%3D&auto=format&fit=crop&w=700&q=60") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 h1 {
@@ -54,9 +58,7 @@ p {
     height:150px;
     width:200px;
     margin: auto;
-
     border: 2px solid green;
-
     text-align: center;
     background:grey;
     padding: 0 10px;
@@ -147,4 +149,32 @@ li a:hover {
     width: 35px;
     height: 35px;
     cursor: pointer
+}
+#login .container #login-row #login-column #login-box {
+  margin-top: 120px;
+  margin-bottom:200px;
+  max-width: 600px;
+  height: 380px;
+  border: 1px solid #9C9C9C;
+  background-color: #EAEAEA;
+}
+#login .container #login-row #login-column #login-box #login-form {
+  padding: 20px;
+}
+#login .container #login-row #login-column #login-box #login-form #register-link {
+  margin-top: -85px;
+}
+#register .container #register-row #register-column #register-box {
+  margin-top: 60px;
+  margin-bottom: 200px;
+  max-width: 400px;
+  height: 600px;
+  border: 1px solid #9C9C9C;
+  background-color: #EAEAEA;
+}
+#register .container #register-row #register-column #register-box #register-form {
+  padding: 20px;
+}
+#register .container #register-row #register-column #register-box #register-form #register-link {
+  margin-top: -85px;
 }

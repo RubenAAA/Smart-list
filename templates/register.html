@@ -8,6 +8,7 @@
     </head>
 
     <body>
+    <div style="background: url('https://images.unsplash.com/photo-1490818387583-1baba5e638af?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8Zm9vZHxlbnwwfHwwfA%3D%3D&auto=format&fit=crop&w=600&q=60') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
         <h1>Shopping list</h1>
         <div class="topnav">
             <ul>
@@ -23,46 +24,66 @@
                     <li style="float:right"><a href="logout">Logout</a>
                     <li style="float:right"><a href ="my-profile">My Profile</a>
                 {% else %}
-                    <li><a href="#">Home</a>
-                    <li><a href="#">New Post</a>
+                    <li><a href="/">Home</a>
                     <li style="float:right"><a href="login">Login</a>
                     <li style="float:right"><a class="active" href="register">Registration</a>
                 {% endif %}
             </ul>
-        </div><br><br>
+        </div>
 
         <div class="container" style="min-height:100% width:80%">
-        	{% with messages = get_flashed_messages() %}
-        	  {% if messages %}
-        	    {% for message in messages %}
-        		  <div class="alert alert-warning alert-dismissible" role="alert">
-        		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-        			{{message}}
-        		  </div>
-        		{% endfor %}
-        	  {% endif %}
-        	{% endwith %}
-        </div><br>
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="alert alert-warning alert-dismissible" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    {{message}}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+        </div>
 
-<html>
-<form  method="post"  class="formscss">
-  {{ form.hidden_tag() }}
+        <form  method="post"  class="formscss">
+          {{ form.hidden_tag() }}
 
-  {{ form.fname.label }} {{ form.fname() }}
-  <br>  <br>
-  {{ form.lname.label }} {{ form.lname() }}
-  <br>  <br>
-  {{ form.uname.label }} {{ form.uname() }}
-  <br>  <br>
-  {{ form.email.label }} {{ form.email() }}
-  <br>  <br>
-  {{ form.password.label }} {{ form.password() }}
-  <br>  <br>
-  {{ form.submit_button() }}
-
-</form>
-
-
-
-<h5> Are you already registered? <a href="{{ url_for("login") }}">Sign in here</a></h5>
-</html>
+            <div id="register">
+                <div class="container">
+                    <div id="register-row" class="row justify-content-center align-items-center">
+                        <div id="register-column" class="col-md-6">
+                            <div id="register-box" class="col-md-12">
+                                <form id="register-form" class="form" action="" method="post">
+                                    <br><h3 class="text-center text-info">Registration</h3><br>
+                                    <div class="form-group">
+                                        <label for="username" class="text-info">First Name:</label><br>
+                                        {{ form.fname() }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password" class="text-info">Last Name:</label><br>
+                                        {{ form.lname() }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password" class="text-info">User Name:</label><br>
+                                        {{ form.uname() }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password" class="text-info">Email:</label><br>
+                                        {{ form.email() }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password" class="text-info">Password:</label><br>
+                                        {{ form.password() }}
+                                    </div><br>
+                                    <div class="form-group">
+                                        {{ form.submit_button() }}
+                                        <br><br><a href="login" class="text-info">Sign in here</a><br>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form><br>
+    </div>
+</body>
