@@ -4,14 +4,15 @@ from PIL import Image
 from io import BytesIO
 import os
 import datetime
-from flask import Flask, render_template, redirect, url_for, flash
+from werkzeug.utils import secure_filename
+from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
 from forms import RegistrationForm, LoginForm, receipt_upload, user_preference
-from forms import button_for_script, button1_for_script, keyword, Trytest, Select_recipe
-from api_keys import APIKEY
+from forms import button_for_script, button1_for_script, keyword, Trytest, Select_recipe, receipt_upload_adv
+from api_keys import APIKEY, OCRKEY
 
 app = Flask(__name__)
 
@@ -84,6 +85,8 @@ class Items(db.Model, UserMixin):
                f" user_id: '{self.user_id}')"
 
 
+
+
 ###########
 # routes
 ###########
@@ -121,12 +124,12 @@ def index():
         return redirect(url_for("login"))
 
 
-@app.route("/upload-receipt")   # We still haven't discussed this shit
+@app.route("/upload-receipt")   # Am on it
 def manual_receipt():
     if current_user.is_authenticated:
         form = receipt_upload()
         if form.validate_on_submit():
-            return True  # Placeholder
+           return true #placeholder
         return render_template("upload-receipt.html", form=form)
     else:
         return redirect(url_for("login"))
@@ -174,6 +177,70 @@ def delete(item_id):
     flash('Item deleted.')
     return redirect(url_for('index'))
 
+@app.route("/scan-receipt", methods=["POST", "GET"])
+def receipt():
+    if current_user.is_authenticated:
+            #for testing purposes
+        form = receipt_upload_adv(request.form)
+        assets_dir = "static"
+        filename = "receipt.jpg"
+        path = os.path.join(assets_dir, filename) 
+        
+
+        payload = {'isOverlayRequired': False,
+               'apikey': "498f0b56fb88957",
+               'language': "ger",
+               }
+        with open(path, 'rb') as f:
+            response = requests.post('https://api.ocr.space/parse/image',
+                          files={path: f},
+                          data=payload,
+                          )
+        
+        print(response.content)
+        response = response.content
+
+        #cleaning up result
+
+            #classify it
+
+            #print Table so i can check
+
+            #add to (previous bought) list
+
+        if form.validate_on_submit():
+            
+            #get picture
+            
+            assets_dir = "static"
+            filename = "receipt.jpg"
+            path = os.path.join(assets_dir, filename) 
+            form.receipt_picture.data.save(path)
+            
+            
+            #API Call
+            payload = {'isOverlayRequired': False,
+               'apikey': "498f0b56fb88957",
+               'language': "ger",
+               }
+            with open(path, 'rb') as f:
+                response = requests.post('https://api.ocr.space/parse/image',
+                          files={path: f},
+                          data=payload,
+                          )
+            response = response.content
+        
+            
+            #cleaning up result
+
+            #classify it
+
+            #print Table so i can check
+
+            #add to (previous bought) list
+        return render_template("scan-receipt.html", form=form)  
+    else:
+        return redirect(url_for("login"))
 
 """
 Advanced functionalities
@@ -186,12 +253,7 @@ def analytics():
         return redirect(url_for("login"))
 
 
-@app.route("/scan-receipt")
-def receipt():
-    if current_user.is_authenticated:
-        # Scan receipt and upload its contents
-    else:
-        return redirect(url_for("login"))
+
 
 
 
@@ -325,6 +387,7 @@ def logout():
 ############
 # functions
 ############
+
 
 def register_user(form_data):
     def email_already_taken(email):

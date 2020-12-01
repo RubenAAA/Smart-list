@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm, Form
 from wtforms import StringField, SubmitField, PasswordField, SelectField, TextAreaField, IntegerField
-from flask_wtf.file import FileField
+from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired
 # We need the following two for the file upload forms:
 # from flask_wtf.file import FileField
@@ -70,14 +70,15 @@ class user_preference(FlaskForm):
     preference = StringField("Change the amount of default items displayed")
     submit_button = SubmitField("Submit")
 
+class receipt_upload_adv(Form):
+    receipt_picture = FileField("Upload your receipt",
+                                            validators=[DataRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
+    submit_button = SubmitField("Submit")
 
 """
 Advanced functionalities
 
-class receipt_upload_adv(Form):
-    receipt_picture = FileField("Upload your receipt",
-                                            validators=[DataRequired()])
-    submit_button = SubmitField("Submit")
+
 
 
 
