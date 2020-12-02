@@ -237,15 +237,17 @@ def receipt():
     else:
         return redirect(url_for("login"))
 
-"""
-Advanced functionalities
-
 @app.route("/Analytics")
 def analytics():
     if current_user.is_authenticated:
-        # The fancy expense report
+        return render_template("analytics.html")
     else:
         return redirect(url_for("login"))
+        
+"""
+Advanced functionalities
+
+
 
 
 
