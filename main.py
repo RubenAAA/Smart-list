@@ -1,9 +1,7 @@
 import pandas as pd
-import requests
 from PIL import Image
 from io import BytesIO
-import os
-import datetime
+import os, json, datetime, requests
 from werkzeug.utils import secure_filename
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_sqlalchemy import SQLAlchemy
@@ -180,64 +178,61 @@ def delete(item_id):
 @app.route("/scan-receipt", methods=["POST", "GET"])
 def receipt():
     if current_user.is_authenticated:
-            #for testing purposes
+                 
         form = receipt_upload_adv(request.form)
-        assets_dir = "static"
-        filename = "receipt.jpg"
-        path = os.path.join(assets_dir, filename) 
-        
-
-        payload = {'isOverlayRequired': False,
-               'apikey': "498f0b56fb88957",
-               'language': "ger",
-               }
-        with open(path, 'rb') as f:
-            response = requests.post('https://api.ocr.space/parse/image',
-                          files={path: f},
-                          data=payload,
-                          )
-        
-        print(response.content)
-        response = response.content
-
-        #cleaning up result
-
-            #classify it
-
-            #print Table so i can check
-
-            #add to (previous bought) list
-
+ 
         if form.validate_on_submit():
             
             #get picture
             
             assets_dir = "static"
-            filename = "receipt.jpg"
+            filename = str(datetime.datetime.now()) + ".jpg"
             path = os.path.join(assets_dir, filename) 
             form.receipt_picture.data.save(path)
             
             
             #API Call
-            payload = {'isOverlayRequired': False,
+            payload = {'isOverlayRequired': "false",
                'apikey': "498f0b56fb88957",
                'language': "ger",
+               "isTable": "True",
+               "detectOrientation": "true",
                }
             with open(path, 'rb') as f:
                 response = requests.post('https://api.ocr.space/parse/image',
                           files={path: f},
                           data=payload,
                           )
-            response = response.content
-        
+                    
             
             #cleaning up result
 
-            #classify it
+            response = response.content.decode()  
+            response = json.loads(response)
+            response = response["ParsedResults"][0]["TextOverlay"]["Lines"] #cuts the json to the parts we need, it is now a list
+                    
+            #add to DB
+            for i in response[3:]: #starts at 3 because everything beforhand will be information about the shop
+                i = i["LineText"]
+                if i == "TOTAL" or i == "Total": #stops it if no more items come
+                    break
+                product = Items(item=i,     #add to  list
+                    date_created=datetime.datetime.now(),
+                    user_id=current_user.id)
+                db.session.add(product)
+                                  
+            #commit
+            db.session.commit()
+            flash("Items have been added to your shopping list")
+            #delete picture
+            if os.path.exists(path):
+                os.remove(path)
+            else:
+                print("The file does not exist")           
 
-            #print Table so i can check
+         
 
-            #add to (previous bought) list
+
         return render_template("scan-receipt.html", form=form)  
     else:
         return redirect(url_for("login"))
