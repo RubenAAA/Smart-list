@@ -30,8 +30,11 @@
                 {% endif %}
             </ul>
         </div><br><br>
-
-<h2> View your five most recent lists. </h2>
+{% if lll > 1 %}
+<h2> View your {{ lll }} most recent lists. </h2>
+{% else %}
+<h2> This is your most recent list. You can always come back here to check previous lists once you submit the current one. </h2>
+{% endif %}
   <br>  <br>
 <form  method="post">
   {{ form.hidden_tag() }}

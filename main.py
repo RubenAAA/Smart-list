@@ -1,7 +1,10 @@
 import pandas as pd
 from PIL import Image
 from io import BytesIO
-import os, json, datetime, requests
+import os
+import json
+import datetime
+import requests
 from werkzeug.utils import secure_filename
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_sqlalchemy import SQLAlchemy
@@ -21,6 +24,8 @@ bcrypt = Bcrypt(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
@@ -82,8 +87,6 @@ class Items(db.Model, UserMixin):
                f" date_created: '{self.date_created}', " +\
                f" user_id: '{self.user_id}')"
 
-db.create_all()
-
 
 ###########
 # routes
@@ -97,7 +100,7 @@ def index():
         current_id = current_user.id
         my_user = User.query.filter_by(id=current_id).first()
         items = get_items(0)
-        popular = get_popular_items(5)
+        popular = get_popular_items(5)  # User.num_of_items)
         form = button_for_script()
         form1 = button1_for_script()
 
@@ -129,7 +132,7 @@ def manual_receipt():
         form2 = receipt_upload_adv()
 
         if form2.validate_on_submit():
-            #get picture
+            # get picture
 
             assets_dir = "static/"
             filename = form2.receipt_picture.name + ".jpg"
@@ -137,47 +140,46 @@ def manual_receipt():
 
             form2.receipt_picture.data.save(path)
 
-            #compress picture
+            # compress picture
             picture = Image.open(path)
             picture.save(path,
-                 "JPEG",
-                 optimize = True,
-                 quality = 10)
+                         "JPEG",
+                         optimize=True,
+                         quality=10)
 
-            #API Call
+            # API Call
             payload = {'isOverlayRequired': "false",
-               'apikey': "498f0b56fb88957",
-               'language': "ger",
-               "isTable": "True",
-               "detectOrientation": "true",
-               }
+                       'apikey': "498f0b56fb88957",
+                       'language': "ger",
+                       "isTable": "True",
+                       "detectOrientation": "true",
+                       }
             with open(path, 'rb') as f:
                 response = requests.post('https://api.ocr.space/parse/image',
-                          files={path: f},
-                          data=payload,
-                          )
+                                         files={path: f},
+                                         data=payload,
+                                         )
 
-
-            #cleaning up result
+            # cleaning up result
 
             response = response.content.decode()
             response = json.loads(response)
             print(response)
             try:
-                response = response["ParsedResults"][0]["TextOverlay"]["Lines"] #cuts the json to the parts we need, it is now a list
+                # cuts the json to the parts we need, it is now a list
+                response = response["ParsedResults"][0]["TextOverlay"]["Lines"]
             except:
                 flash("Error in Parsing the File try another one")
                 return redirect(url_for("login"))
 
-
-            #add to DB
-            for i in response[3:]: #starts at 3 because everything beforhand will be information about the shop
+            # add to DB
+            for i in response[3:]:  # starts at 3 because everything beforhand will be information about the shop
                 i = i["LineText"]
-                if i == "TOTAL" or i == "Total": #stops it if no more items come
+                if i == "TOTAL" or i == "Total":  # stops it if no more items come
                     break
-                product = Items(item=i,     #add to  list
-                    date_created=datetime.datetime.now(),
-                    user_id=current_user.id)
+                product = Items(item=i,  # add to  list
+                                date_created=datetime.datetime.now(),
+                                user_id=current_user.id)
                 db.session.add(product)
 
             #commit
@@ -208,16 +210,53 @@ def my_lists():
         nd_df = nd_df.drop_duplicates(subset='session_id', keep="last")
         nd_df = nd_df.sort_values(by='session_id', ascending=False)
         nd_df = nd_df.head().reset_index(drop=True)
-        for i in range(0, 4):
-            nd_df["date_created"][i] = str(nd_df["date_created"][i])[
-                :10] + " at " + str(nd_df["date_created"][i])[11:19]
-        items = get_items(0)
+        if len(nd_df.index) >= 5:
+            for i in range(0, 4):
+                nd_df["date_created"][i] = str(nd_df["date_created"][i])[
+                    :10] + " at " + str(nd_df["date_created"][i])[11:19]
+            items = get_items(0)
+            lll = 5
+            choices = [(0, "current list"),
+                       (1, "list from the " + str(nd_df["date_created"][0])),
+                       (2, "list from the " + str(nd_df["date_created"][1])),
+                       (3, "list from the " + str(nd_df["date_created"][2])),
+                       (4, "list from the " + str(nd_df["date_created"][3]))]
 
-        choices = [(0, "current list"),
-                   (1, "list from the " + str(nd_df["date_created"][0])),
-                   (2, "list from the " + str(nd_df["date_created"][1])),
-                   (3, "list from the " + str(nd_df["date_created"][2])),
-                   (4, "list from the " + str(nd_df["date_created"][3]))]
+        elif len(nd_df.index) == 4:
+            for i in range(0, 3):
+                nd_df["date_created"][i] = str(nd_df["date_created"][i])[
+                    :10] + " at " + str(nd_df["date_created"][i])[11:19]
+            items = get_items(0)
+            lll = 4
+            choices = [(0, "current list"),
+                       (1, "list from the " + str(nd_df["date_created"][0])),
+                       (2, "list from the " + str(nd_df["date_created"][1])),
+                       (3, "list from the " + str(nd_df["date_created"][2]))]
+
+        elif len(nd_df.index) == 3:
+            for i in range(0, 2):
+                nd_df["date_created"][i] = str(nd_df["date_created"][i])[
+                    :10] + " at " + str(nd_df["date_created"][i])[11:19]
+            items = get_items(0)
+            lll = 3
+            choices = [(0, "current list"),
+                       (1, "list from the " + str(nd_df["date_created"][0])),
+                       (2, "list from the " + str(nd_df["date_created"][1]))]
+
+        elif len(nd_df.index) == 2:
+            for i in range(0, 1):
+                nd_df["date_created"][i] = str(nd_df["date_created"][i])[
+                    :10] + " at " + str(nd_df["date_created"][i])[11:19]
+            items = get_items(0)
+            lll = 2
+            choices = [(0, "current list"),
+                       (1, "list from the " + str(nd_df["date_created"][0]))]
+
+        elif len(nd_df.index) == 1:
+            items = get_items(0)
+            lll = 1
+            choices = [(0, "current list")]
+
         form.recipe_chosen.choices = choices
 
         if form.validate_on_submit():
@@ -226,7 +265,8 @@ def my_lists():
             else:
                 items = get_items(nd_df["session_id"][form.recipe_chosen.data - 1])
 
-        return render_template("my_lists.html", items=items, form=form)
+        return render_template("my_lists.html", items=items, form=form,
+                               lll=lll)
     else:
         return redirect(url_for("login"))
 
@@ -239,7 +279,6 @@ def delete(item_id):
     db.session.commit()
     flash('Item deleted.')
     return redirect(url_for('index'))
-
 
 
 @app.route("/analytics")
@@ -335,11 +374,10 @@ def my_profile():
         db.session.commit()
         return redirect(url_for("index"))
     return render_template("my_profile.html",
-                            name=name,
-                            username=username,
-                            email=email,
-                            form=form)
-
+                           name=name,
+                           username=username,
+                           email=email,
+                           form=form)
 
 
 @ app.route("/register", methods=["GET", "POST"])
@@ -428,13 +466,13 @@ def is_login_successful(form_data):
 
 
 def get_name():
-    current_id=current_user.id
-    my_user=User.query.filter_by(id=current_id).first()
+    current_id = current_user.id
+    my_user = User.query.filter_by(id=current_id).first()
     if my_user is None:
         return False
-    name=my_user.fname + " " + my_user.lname
-    username=my_user.uname
-    email=my_user.email
+    name = my_user.fname + " " + my_user.lname
+    username = my_user.uname
+    email = my_user.email
     return name, username, email
 
 
@@ -468,15 +506,15 @@ def get_popular_items(num_of_items):
     df = pd.read_sql(Items.query.statement, db.session.bind)
     current_df = df[df["user_id"] == current_user.id]
     top_n_lst = current_df['item'].value_counts()[:num_of_items].index.tolist()
-    img_lst=[]
+    img_lst = []
     for i in top_n_lst:
-        img_url=search_img(i)
+        img_url = search_img(i)
         filename = i + ".jpg"
         filepath = save_img(img_url, "static/data/", filename)
         img_lst.append(filepath)
     data = {"item": top_n_lst,
             "path": img_lst}
-    top_n_df = pd.DataFrame(data, columns = ["item", "path"])
+    top_n_df = pd.DataFrame(data, columns=["item", "path"])
     return top_n_df
 
 
@@ -494,14 +532,12 @@ def search_img(search_query):
         return "https://thumbs.dreamstime.com/b/no-image-available-icon-photo-camera-flat-vector-illustration-132483296.jpg"
 
 
-
 def save_img(img_url, folder_prefix, filename):
     img = requests.get(img_url)
     file_path = os.path.join(folder_prefix, filename)
     with open(file_path, "wb") as file:
         file.write(img.content)
     return file_path
-
 
 
 def attribute_session_id():
