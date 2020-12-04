@@ -10,10 +10,10 @@ body {
 }
 
 h1 {
-  color:yellow;
+  color:blue;
   font-size:50;
   font-family:"Courier New", Courier, monospace;
-  padding-top:22px;
+  padding-top:21px;
 }
 
 p {
@@ -21,7 +21,6 @@ p {
     font-size: 13px;
 }
 .footer {
-  position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
@@ -177,4 +176,10 @@ li a:hover {
 }
 #register .container #register-row #register-column #register-box #register-form #register-link {
   margin-top: -85px;
+}
+.avatar {
+  vertical-align: middle;
+  width: auto;
+  height: 100px;
+  border-radius: 50%;
 }

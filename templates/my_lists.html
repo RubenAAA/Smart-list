@@ -17,15 +17,14 @@
 
                 {% if current_user.is_authenticated %}
                     <li><a href="/">Home</a>
-                    <li><a href="my-lists">Previous lists</a>
+                    <li><a class="active" href="my-lists">Previous lists</a>
                     <li><a href="find-recipe">Find recipe</a>
                     <li><a href="upload-receipt">Upload receipt</a>
                     <li><a href="#">Analytics</a>
                     <li style="float:right"><a href="logout">Logout</a>
-                    <li style="float:right"><a class="active" href ="#">My Profile</a>
+                    <li style="float:right"><a href ="my-profile">My Profile</a>
                 {% else %}
                     <li><a class="active" href="#">Home</a>
-                    <li><a href="#">New Post</a>
                     <li style="float:right"><a href="login">Login</a>
                     <li style="float:right"><a href="registration">Registration</a>
                 {% endif %}
