@@ -100,7 +100,7 @@ def index():
         current_id = current_user.id
         my_user = User.query.filter_by(id=current_id).first()
         items = get_items(0)
-        popular = get_popular_items(5)  # User.num_of_items)
+        popular = get_popular_items(my_user.num_of_items)
         form = button_for_script()
         form1 = button1_for_script()
 

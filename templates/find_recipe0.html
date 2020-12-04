@@ -54,11 +54,11 @@
 
     <div id="find_recipe">
         <div class="container">
-            <div id="register-row" class="row justify-content-center align-items-center">
-                <div id="register-column" class="col-md-6">
-                    <div id="register-box" class="col-md-12">
-                        <form id="register-form" class="form" action="" method="post">
-                            <br><h3 class="text-center text-info"></h3><br>
+            <div id="find_recipe-row" class="row justify-content-center align-items-center">
+                <div id="find_recipe-column" class="col-md-6">
+                    <div id="find_recipe-box" class="col-md-12">
+                        <form id="find_recipe-form" class="form" action="" method="post">
+                            <br><h3 class="text-center text-info">Find recipe</h3><br>
                             <div class="form-group">
                                 <label for="username" class="text-info">{{ form_diet.query.label }}</label><br>
                                 {{ form_diet.query() }}
@@ -81,42 +81,42 @@
                         </form>
                     </form>
                   </div>
+              </form><br><br>
+
                   <p>If you want to see your results type here<p>
+                      <button onclick="toggle_display()">Display recipes</button>
+                    <div class="content2_section", style="display: none;">
+                    <br><br>
+                      <form method="post">
+                        {{ form2.hidden_tag() }}
+
+                        {% for i in range(0, 10) %}
+                        Recipe number {{ i + 1 }} :
+                        {{ choices[i][1] }}
+                        {{ choices[i][2] }}
+                        <br>
+                        <br>
+                          {% endfor %}
+                        <br>
+                        {{ form2.number() }}
+                        {{ form2.submit_button() }}
+
+                    </form><br><br>
+                    </div>
 
 
-                  </form><br><br>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</form><br>
 
 
 
 
-        <button onclick="toggle_display()">Display recipes</button>
-      <div class="content2_section", style="display: none;">
-      <br><br>
-        <form method="post">
-          {{ form2.hidden_tag() }}
 
-          {% for i in range(0, 10) %}
-          Recipe number {{ i + 1 }} :
-          {{ choices[i][1] }}
-          {{ choices[i][2] }}
-          <br>
-          <br>
-            {% endfor %}
-          <br>
-          {{ form2.number() }}
-          {{ form2.submit_button() }}
-
-      </form><br><br>
-      </div>
-      <div class="footer">
-          <h6>Copyright 2020</h6>
-      </div>
-
+<div class="footer">
+    <h6>Copyright 2020</h6>
+</div>
   </body>
 </html>
