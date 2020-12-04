@@ -177,6 +177,20 @@ li a:hover {
 #register .container #register-row #register-column #register-box #register-form #register-link {
   margin-top: -85px;
 }
+
+#find_recipe .container #find_recipe-row #find_recipe-column #find_recipe-box {
+  margin-top: 60px;
+  margin-bottom: 200px;
+
+
+}
+#find_recipe .container #find_recipe-row #find_recipe-column #find_recipe-box #find_recipe-form {
+    padding: 20px;
+}
+#find_recipe .container #find_recipe-row #find_recipe-column #find_recipe-box #find_recipe-form #find_recipe-link {
+  margin-top: -85px;
+}
+
 .avatar {
   vertical-align: middle;
   width: auto;

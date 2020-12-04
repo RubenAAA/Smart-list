@@ -34,17 +34,18 @@
         </div><br><br>
 <h3>Upload receipt</h3>
 <br>
+<p>You can easily upload your receipt as an image</p>
 <form action="{{ url_for('manual_receipt') }}" method="POST"  class="formscss" enctype=multipart/form-data>
   {{ form2.hidden_tag() }}
 
   {{ form2.receipt_picture }}
   <br>  <br>
-  
+
   {{ form2.submit_button()}}
 
 </form>
 <br><br>
-<h6>If you want to enter your receipt by hand</h6><br>
+<p>If you want to enter your receipt by hand</hp><br>
 
 <form  method="post"  class="formscss">
   {{ form.hidden_tag() }}

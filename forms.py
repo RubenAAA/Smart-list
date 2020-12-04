@@ -55,7 +55,7 @@ class Trytest(Form):
 
 
 class keyword(Form):
-    query = StringField("Enter a keyword for a recipe.",
+    query = StringField("Enter a keyword for a recipe [e. g. spaghetti, burger, chicken]",
                         validators=[DataRequired()])
     diet = StringField(
         "Enter a diet if you follow one [vegan, vegetarian, gluten free, dairy free, paleo, etc.]")
@@ -73,7 +73,7 @@ class user_preference(FlaskForm):
 class receipt_upload_adv(FlaskForm):
     receipt_picture = FileField("Upload your receipt",
                                             validators=[DataRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
-    submit_button = SubmitField("Submit")
+    submit_button = SubmitField("Upload")
 
 """
 Advanced functionalities

@@ -35,7 +35,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100), nullable=False)
     receipts = db.relationship("Receipts", backref="op", lazy=True)
     items = db.relationship("Items", backref="opp", lazy=True)
-    # num_of_items = db.Column(db.Integer, default=5)
+    num_of_items = db.Column(db.Integer, default=5)
 
     def __repr__(self):
         return f"User(id: '{self.id}', fname: '{self.fname}', " +\
@@ -82,7 +82,7 @@ class Items(db.Model, UserMixin):
                f" date_created: '{self.date_created}', " +\
                f" user_id: '{self.user_id}')"
 
-
+db.create_all()
 
 
 ###########
@@ -97,7 +97,7 @@ def index():
         current_id = current_user.id
         my_user = User.query.filter_by(id=current_id).first()
         items = get_items(0)
-        popular = get_popular_items(5) #User.num_of_items)
+        popular = get_popular_items(5)
         form = button_for_script()
         form1 = button1_for_script()
 
@@ -122,7 +122,7 @@ def index():
         return redirect(url_for("login"))
 
 
-@app.route("/upload-receipt", methods=["GET", "POST"])   
+@app.route("/upload-receipt", methods=["GET", "POST"])
 def manual_receipt():
     if current_user.is_authenticated:
         form = receipt_upload()
@@ -130,20 +130,20 @@ def manual_receipt():
 
         if form2.validate_on_submit():
             #get picture
-            
+
             assets_dir = "static/"
             filename = form2.receipt_picture.name + ".jpg"
-            path = assets_dir + filename 
-            
+            path = assets_dir + filename
+
             form2.receipt_picture.data.save(path)
-            
+
             #compress picture
             picture = Image.open(path)
-            picture.save(path,  
-                 "JPEG",  
-                 optimize = True,  
-                 quality = 10) 
-            
+            picture.save(path,
+                 "JPEG",
+                 optimize = True,
+                 quality = 10)
+
             #API Call
             payload = {'isOverlayRequired': "false",
                'apikey': "498f0b56fb88957",
@@ -156,11 +156,11 @@ def manual_receipt():
                           files={path: f},
                           data=payload,
                           )
-                    
-            
+
+
             #cleaning up result
 
-            response = response.content.decode()  
+            response = response.content.decode()
             response = json.loads(response)
             print(response)
             try:
@@ -168,8 +168,8 @@ def manual_receipt():
             except:
                 flash("Error in Parsing the File try another one")
                 return redirect(url_for("login"))
-            
-                    
+
+
             #add to DB
             for i in response[3:]: #starts at 3 because everything beforhand will be information about the shop
                 i = i["LineText"]
@@ -179,20 +179,20 @@ def manual_receipt():
                     date_created=datetime.datetime.now(),
                     user_id=current_user.id)
                 db.session.add(product)
-                                  
+
             #commit
             db.session.commit()
-            flash("Items have been added to your shopping list")
+            flash("Items have been added to your current shopping list")
             #delete picture
             if os.path.exists(path):
                 os.remove(path)
             else:
-                print("The file does not exist")   
-            return redirect(url_for("index"))     
-        
+                print("The file does not exist")
+            return redirect(url_for("index"))
+
         if form.validate_on_submit():
               print("Does nothing yet")
-           
+
         return render_template("upload-receipt.html", form=form, form2=form2)
     else:
         return redirect(url_for("login"))
@@ -248,7 +248,7 @@ def analytics():
         return render_template("analytics.html")
     else:
         return redirect(url_for("login"))
-        
+
 """
 Advanced functionalities
 
@@ -484,11 +484,14 @@ def search_img(search_query):
     access_key = "KtozeG1fDJdYwiTtQRpDr0XVaSb_NyT_mKbBQ2gI1lg"
     url = "https://api.unsplash.com/search/photos/"
     parameter = {"client_id" : access_key,
-                 "query" : search_query}
+                 "query" : search_query.split()[0]}
     r = requests.get(url, params=parameter)
     data=r.json()
-    url_raw = data["results"][0]["urls"]["small"]
-    return url_raw
+    try:
+        url_raw = data["results"][0]["urls"]["small"]
+        return url_raw
+    except:
+        return "https://thumbs.dreamstime.com/b/no-image-available-icon-photo-camera-flat-vector-illustration-132483296.jpg"
 
 
 
