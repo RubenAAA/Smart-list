@@ -9,7 +9,7 @@
     </head>
 
     <body>
-        <h1>Shopping list</h1>
+        
         <div class="topnav">
             <ul>
                 <a class="navbar-brand" href={{ url_for("index") }}>
@@ -20,8 +20,8 @@
                     <li><a href="/">Home</a>
                     <li><a href="my-lists">Previous lists</a>
                     <li><a href="find-recipe">Find recipe</a>
-                    <li><a class="active" href="upload-receipt">Upload receipt</a>
-                    <li><a href="#">Analytics</a>
+                    <li><a href="upload-receipt">Upload receipt</a>
+                    <li><a class="active" href="analytics">Analytics</a>
                     <li style="float:right"><a href="logout">Logout</a>
                     <li style="float:right"><a href ="my-profile">My Profile</a>
                 {% else %}
@@ -32,18 +32,10 @@
                 {% endif %}
             </ul>
         </div><br><br>
-<h3>Upload receipt</h3>
-<br>
+<h3>Analytics</h3>
 
-<form action="{{ url_for('receipt') }}" method="POST"  class="formscss">
-  {{ form.hidden_tag() }}
 
-  {{ form.receipt_picture }}
-  <br>  <br>
-  <input type="submit">
-  {{ form.submit}}
-
-</form>
+<iframe width="60%" height="800" src="https://datastudio.google.com/embed/reporting/8935a182-a29b-4b2e-8a64-cfa95e574e14/page/FNSrB" frameborder="0" style="border:0" allowfullscreen></iframe>
 
 <div class="container" style="min-height:100% width:80%">
 	{% with messages = get_flashed_messages() %}

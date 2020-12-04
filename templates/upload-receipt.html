@@ -21,7 +21,7 @@
                     <li><a href="my-lists">Previous lists</a>
                     <li><a href="find-recipe">Find recipe</a>
                     <li><a class="active" href="upload-receipt">Upload receipt</a>
-                    <li><a href="#">Analytics</a>
+                    <li><a href="analytics">Analytics</a>
                     <li style="float:right"><a href="logout">Logout</a>
                     <li style="float:right"><a href ="my-profile">My Profile</a>
                 {% else %}
@@ -33,6 +33,17 @@
             </ul>
         </div><br><br>
 <h3>Upload receipt</h3>
+<br>
+<form action="{{ url_for('manual_receipt') }}" method="POST"  class="formscss" enctype=multipart/form-data>
+  {{ form2.hidden_tag() }}
+
+  {{ form2.receipt_picture }}
+  <br>  <br>
+  
+  {{ form2.submit_button()}}
+
+</form>
+<br><br>
 <h6>If you want to enter your receipt by hand</h6><br>
 
 <form  method="post"  class="formscss">

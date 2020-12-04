@@ -122,13 +122,78 @@ def index():
         return redirect(url_for("login"))
 
 
-@app.route("/upload-receipt")   # Am on it
+@app.route("/upload-receipt", methods=["GET", "POST"])   
 def manual_receipt():
     if current_user.is_authenticated:
         form = receipt_upload()
+        form2 = receipt_upload_adv()
+
+        if form2.validate_on_submit():
+            #get picture
+            
+            assets_dir = "static/"
+            filename = form2.receipt_picture.name + ".jpg"
+            path = assets_dir + filename 
+            
+            form2.receipt_picture.data.save(path)
+            
+            #compress picture
+            picture = Image.open(path)
+            picture.save(path,  
+                 "JPEG",  
+                 optimize = True,  
+                 quality = 10) 
+            
+            #API Call
+            payload = {'isOverlayRequired': "false",
+               'apikey': "498f0b56fb88957",
+               'language': "ger",
+               "isTable": "True",
+               "detectOrientation": "true",
+               }
+            with open(path, 'rb') as f:
+                response = requests.post('https://api.ocr.space/parse/image',
+                          files={path: f},
+                          data=payload,
+                          )
+                    
+            
+            #cleaning up result
+
+            response = response.content.decode()  
+            response = json.loads(response)
+            print(response)
+            try:
+                response = response["ParsedResults"][0]["TextOverlay"]["Lines"] #cuts the json to the parts we need, it is now a list
+            except:
+                flash("Error in Parsing the File try another one")
+                return redirect(url_for("login"))
+            
+                    
+            #add to DB
+            for i in response[3:]: #starts at 3 because everything beforhand will be information about the shop
+                i = i["LineText"]
+                if i == "TOTAL" or i == "Total": #stops it if no more items come
+                    break
+                product = Items(item=i,     #add to  list
+                    date_created=datetime.datetime.now(),
+                    user_id=current_user.id)
+                db.session.add(product)
+                                  
+            #commit
+            db.session.commit()
+            flash("Items have been added to your shopping list")
+            #delete picture
+            if os.path.exists(path):
+                os.remove(path)
+            else:
+                print("The file does not exist")   
+            return redirect(url_for("index"))     
+        
         if form.validate_on_submit():
-           return true #placeholder
-        return render_template("upload-receipt.html", form=form)
+              print("Does nothing yet")
+           
+        return render_template("upload-receipt.html", form=form, form2=form2)
     else:
         return redirect(url_for("login"))
 
@@ -175,81 +240,17 @@ def delete(item_id):
     flash('Item deleted.')
     return redirect(url_for('index'))
 
-@app.route("/scan-receipt", methods=["POST", "GET"])
-def receipt():
-    if current_user.is_authenticated:
-                 
-        form = receipt_upload_adv(request.form)
- 
-        if form.validate_on_submit():
-            
-            #get picture
-            
-            assets_dir = "static"
-            filename = str(datetime.datetime.now()) + ".jpg"
-            path = os.path.join(assets_dir, filename) 
-            form.receipt_picture.data.save(path)
-            
-            
-            #API Call
-            payload = {'isOverlayRequired': "false",
-               'apikey': "498f0b56fb88957",
-               'language': "ger",
-               "isTable": "True",
-               "detectOrientation": "true",
-               }
-            with open(path, 'rb') as f:
-                response = requests.post('https://api.ocr.space/parse/image',
-                          files={path: f},
-                          data=payload,
-                          )
-                    
-            
-            #cleaning up result
-
-            response = response.content.decode()  
-            response = json.loads(response)
-            response = response["ParsedResults"][0]["TextOverlay"]["Lines"] #cuts the json to the parts we need, it is now a list
-                    
-            #add to DB
-            for i in response[3:]: #starts at 3 because everything beforhand will be information about the shop
-                i = i["LineText"]
-                if i == "TOTAL" or i == "Total": #stops it if no more items come
-                    break
-                product = Items(item=i,     #add to  list
-                    date_created=datetime.datetime.now(),
-                    user_id=current_user.id)
-                db.session.add(product)
-                                  
-            #commit
-            db.session.commit()
-            flash("Items have been added to your shopping list")
-            #delete picture
-            if os.path.exists(path):
-                os.remove(path)
-            else:
-                print("The file does not exist")           
-
-         
 
 
-        return render_template("scan-receipt.html", form=form)  
-    else:
-        return redirect(url_for("login"))
-
-"""
-Advanced functionalities
-
-@app.route("/Analytics")
+@app.route("/analytics")
 def analytics():
     if current_user.is_authenticated:
-        # The fancy expense report
+        return render_template("analytics.html")
     else:
         return redirect(url_for("login"))
-
-
-
-
+        
+"""
+Advanced functionalities
 
 
 @app.route("/suggested-recipe", methods=["GET", "POST"])

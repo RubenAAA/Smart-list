@@ -70,7 +70,7 @@ class user_preference(FlaskForm):
     preference = StringField("Change the amount of default items displayed")
     submit_button = SubmitField("Submit")
 
-class receipt_upload_adv(Form):
+class receipt_upload_adv(FlaskForm):
     receipt_picture = FileField("Upload your receipt",
                                             validators=[DataRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
     submit_button = SubmitField("Submit")
