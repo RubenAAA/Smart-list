@@ -34,16 +34,33 @@
         </div><br><br>
 <h3>Upload receipt</h3>
 <br>
-<p>You can easily upload your receipt as an image</p>
-<form action="{{ url_for('manual_receipt') }}" method="POST"  class="formscss" enctype=multipart/form-data>
-  {{ form2.hidden_tag() }}
+{% if showform3 == True %}
+  <p>You can easily upload your receipt as an image</p>
+  <form action="{{ url_for('manual_receipt') }}" method="POST"  class="formscss" enctype=multipart/form-data>
+    {{ form2.hidden_tag() }}
 
-  {{ form2.receipt_picture }}
-  <br>  <br>
+    {{ form2.receipt_picture }}
+    <br> <br>
 
-  {{ form2.submit_button()}}
+    {{ form2.submit_button()}}
 
-</form>
+  </form>
+{% endif %}
+<br><br>
+{% if showform3 == True %}
+  <p>Select the first Product</p>
+  <form action="{{ url_for('manual_receipt') }}" method="POST"  class="formscss" enctype=multipart/form-data>
+    {{ form3.hidden_tag() }}
+    {{ form3.element_chosen}}
+    
+    
+    <br> <br>
+
+    {{ form3.submit_button()}}
+
+  </form>
+{% endif %}
+
 <br><br>
 <p>If you want to enter your receipt by hand</hp><br>
 
