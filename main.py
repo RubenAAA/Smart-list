@@ -100,7 +100,7 @@ def index():
         current_id = current_user.id
         my_user = User.query.filter_by(id=current_id).first()
         items = get_items(0)
-        try:   
+        try:
             popular = get_popular_items(my_user.num_of_items)
         except:
             popular = pd.DataFrame(columns=["item", "path"])
@@ -131,7 +131,7 @@ def index():
 @app.route("/upload-receipt", methods=["GET", "POST"])
 
 def manual_receipt():
-    
+
     if current_user.is_authenticated:
         form = receipt_upload()
         form2 = receipt_upload_adv()
@@ -173,25 +173,25 @@ def manual_receipt():
 
             response = response.content.decode()
             response = json.loads(response)
-            
+
             try:
                 # cuts the json to the parts we need, it is now a list
                 response = response["ParsedResults"][0]["TextOverlay"]["Lines"]
-                
+
             except:
                 flash("Error in Parsing the File try another one")
                 return redirect(url_for("manual_receipt"))
-            
-            
-            
+
+
+
             for i in response[3:]:  # starts at 3 because everything beforhand will be information about the shop
                 i = i["LineText"]
                 if i == "TOTAL" or i == "Total":  # stops it if no more items come
                     break
                 liste_product.append(i)
             print(liste_product)
-            
-            
+
+
             #establish the choices for the list
             form_list = []
             c = 0
@@ -199,28 +199,28 @@ def manual_receipt():
                 form_list.append((c, i))
                 c += 1
             form3.element_chosen.choices = [i for i in form_list]
-            
 
-            
+
+
             #delete picture
             if os.path.exists(pathl):
                 os.remove(pathl)
             else:
                 print("The file does not exist")
-            
+
             showform3 = True
-            
+
             #redirect(url_for("manual_receipt"))
-            
-        
+
+
 
         if form3.validate_on_submit():
-            
+
             print(form3.element_chosen.data)
             iterator = int(form3.element_chosen.data)
             print(liste_product)
             # add to DB
-            
+
 
             for l in liste_product[iterator:]: #iterates starting with element chosen
                 print(l)
@@ -228,14 +228,14 @@ def manual_receipt():
                                 date_created=datetime.datetime.now(),
                                 user_id=current_user.id)
                 db.session.add(product)
-            
+
             #commit
             db.session.commit()
             flash("Items have been added to your current shopping list")
-            
+
             return redirect(url_for("index"))
 
-        
+
 
         return render_template("upload-receipt.html", form=form, form2=form2, showform3 = showform3, form3 = form3)
     else:
@@ -554,8 +554,8 @@ def get_popular_items(num_of_items):
         filename = i + ".jpg"
         filepath = save_img(img_url, "static/data/", filename)
         img_lst.append(filepath)
-        
-        
+
+
     data = {"item": top_n_lst,
             "path": img_lst}
     top_n_df = pd.DataFrame(data, columns=["item", "path"])
