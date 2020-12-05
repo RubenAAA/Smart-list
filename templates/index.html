@@ -63,6 +63,8 @@
           <div class="card-special">
 
             <h3 class="card-title">{{ row["item"] }}</h3>
+
+            <!--I had to comment out this line, as it would crash my browser if any of the popular items didnt have an image (maybe it was because of the Special Character of the item)-->
             <img class="card-img-bottom" src={{ row["path"] }} class="img" alt="Card image cap">
 
             <br>

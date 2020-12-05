@@ -12,7 +12,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
 from forms import RegistrationForm, LoginForm, receipt_upload, user_preference
-from forms import button_for_script, button1_for_script, keyword, Trytest, Select_recipe, receipt_upload_adv
+from forms import button_for_script, button1_for_script, keyword, Trytest, Select_recipe, receipt_upload_adv, Select_element, Test
 from api_keys import APIKEY, OCRKEY
 
 app = Flask(__name__)
@@ -100,7 +100,10 @@ def index():
         current_id = current_user.id
         my_user = User.query.filter_by(id=current_id).first()
         items = get_items(0)
-        popular = get_popular_items(my_user.num_of_items)
+        try:   
+            popular = get_popular_items(my_user.num_of_items)
+        except:
+            popular = pd.DataFrame(columns=["item", "path"])
         form = button_for_script()
         form1 = button1_for_script()
 
@@ -126,23 +129,29 @@ def index():
 
 
 @app.route("/upload-receipt", methods=["GET", "POST"])
+
 def manual_receipt():
+    
     if current_user.is_authenticated:
         form = receipt_upload()
         form2 = receipt_upload_adv()
+        form3 = Select_element()
+        showform3 = True
+        form3.element_chosen.choices = []
+        liste_product = Test().product_list
 
         if form2.validate_on_submit():
+            flash("This might take a few seconds")
             # get picture
+            assets_dirl = "static/"
+            filenamel = form2.receipt_picture.name + ".jpg"
+            pathl = assets_dirl + filenamel
 
-            assets_dir = "static/"
-            filename = form2.receipt_picture.name + ".jpg"
-            path = assets_dir + filename
-
-            form2.receipt_picture.data.save(path)
+            form2.receipt_picture.data.save(pathl)
 
             # compress picture
-            picture = Image.open(path)
-            picture.save(path,
+            picture = Image.open(pathl)
+            picture.save(pathl,
                          "JPEG",
                          optimize=True,
                          quality=10)
@@ -154,9 +163,9 @@ def manual_receipt():
                        "isTable": "True",
                        "detectOrientation": "true",
                        }
-            with open(path, 'rb') as f:
+            with open(pathl, 'rb') as f:
                 response = requests.post('https://api.ocr.space/parse/image',
-                                         files={path: f},
+                                         files={pathl: f},
                                          data=payload,
                                          )
 
@@ -164,38 +173,71 @@ def manual_receipt():
 
             response = response.content.decode()
             response = json.loads(response)
-            print(response)
+            
             try:
                 # cuts the json to the parts we need, it is now a list
                 response = response["ParsedResults"][0]["TextOverlay"]["Lines"]
+                
             except:
                 flash("Error in Parsing the File try another one")
-                return redirect(url_for("login"))
-
-            # add to DB
+                return redirect(url_for("manual_receipt"))
+            
+            
+            
             for i in response[3:]:  # starts at 3 because everything beforhand will be information about the shop
                 i = i["LineText"]
                 if i == "TOTAL" or i == "Total":  # stops it if no more items come
                     break
-                product = Items(item=i,  # add to  list
+                liste_product.append(i)
+            print(liste_product)
+            
+            
+            #establish the choices for the list
+            form_list = []
+            c = 0
+            for i in liste_product:
+                form_list.append((c, i))
+                c += 1
+            form3.element_chosen.choices = [i for i in form_list]
+            
+
+            
+            #delete picture
+            if os.path.exists(pathl):
+                os.remove(pathl)
+            else:
+                print("The file does not exist")
+            
+            showform3 = True
+            
+            #redirect(url_for("manual_receipt"))
+            
+        
+
+        if form3.validate_on_submit():
+            
+            print(form3.element_chosen.data)
+            iterator = int(form3.element_chosen.data)
+            print(liste_product)
+            # add to DB
+            
+
+            for l in liste_product[iterator:]: #iterates starting with element chosen
+                print(l)
+                product = Items(item=l,  # add to  list
                                 date_created=datetime.datetime.now(),
                                 user_id=current_user.id)
                 db.session.add(product)
-
+            
             #commit
             db.session.commit()
             flash("Items have been added to your current shopping list")
-            #delete picture
-            if os.path.exists(path):
-                os.remove(path)
-            else:
-                print("The file does not exist")
+            
             return redirect(url_for("index"))
 
-        if form.validate_on_submit():
-              print("Does nothing yet")
+        
 
-        return render_template("upload-receipt.html", form=form, form2=form2)
+        return render_template("upload-receipt.html", form=form, form2=form2, showform3 = showform3, form3 = form3)
     else:
         return redirect(url_for("login"))
 
@@ -512,6 +554,8 @@ def get_popular_items(num_of_items):
         filename = i + ".jpg"
         filepath = save_img(img_url, "static/data/", filename)
         img_lst.append(filepath)
+        
+        
     data = {"item": top_n_lst,
             "path": img_lst}
     top_n_df = pd.DataFrame(data, columns=["item", "path"])
