@@ -32,6 +32,7 @@
         </div><br>
 
 <h3>Find Recipe</h3>
+<<<<<<< HEAD
 <h6>Don't know what you need? Here is an easy way to find the ingredients of your favored recipe</h6>
 
 <script type="text/javascript">
@@ -48,6 +49,10 @@
           }
         }
 </script>
+=======
+<h6>Don't know what you need? Here is a easy way to find the ingredients of your favored recipe</h6><br>
+{% if choices == [] %}
+>>>>>>> 91c02c9136bb6b47a67984b410ae1441b6951ae4
 <form  method="post"  class="formscss">
   {{ form_diet.hidden_tag() }}
 
@@ -84,16 +89,29 @@
       </div>
   </div>
 </form>
+{% endif %}
 
-    <p>If you want to see your results type here<p>
-    <button onclick="toggle_display()">Display recipes</button>
-    <div class="content2_section", style="display: none;">
-        <form method="post">
-          {{ form2.hidden_tag() }}
-          <br>
-          {{ form2.number() }}
-          {{ form2.submit_button() }}
-      </form><br><br>
+    <br><br>
+    {% if choices != [] %}
+    <h6 class="text-info">Type the number that is next to the recipe you want to add to your shopping list.</h6>
+    <br>
+    <br>
+      <form method="post">
+        {{ form2.hidden_tag() }}
+
+        {% for i in range(0, 10) %}
+        Recipe number {{ i + 1 }} :
+        {{ choices[i][1] }}
+        {{ choices[i][2] }}
+        <br>
+        <br>
+         {% endfor %}
+        <br>
+        {{ form2.number() }}
+        {{ form2.submit_button() }}
+
+    </form><br><br>
+    {% endif %}
     </div>
 
 
