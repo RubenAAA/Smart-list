@@ -36,7 +36,7 @@ To make use of these features, you first of all need to make an account by click
 
 The items you wish to put onto your list are added one by one under the _add a product to your Shoppinglist_ subheader. To add the product to the list simply click the _submit_ button.
 
-After you are finished with the Shopping List click the _save list_ button at the bottom of the page. From now on your most frequently bought items will be displayed under the _the items you most often buy_ subheader. You can adapt the amount of items displayed in this way on the _my profile_ page, accessible through the navbar. On the Navbar you will also find _upload receipt_. through this functionality you can upload past shopping receipts to improve the items it will suggest to you in the future!
+After you are finished with the Shopping List click the _save list_ button at the bottom of the page. From now on your most frequently bought items will be displayed under the _the items you most often buy_ subheader. You can adapt the amount of items displayed in this way on the _my profile_ page, accessible through the navbar. On the Navbar you will also find _upload receipt_. Through this functionality you can upload past shopping receipts to improve the items it will suggest to you in the future!
 
 
 
