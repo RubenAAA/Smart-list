@@ -1,4 +1,4 @@
-from api_keys import APIKEY
+from api_keys import APIKEY, access_key
 from forms import Select_recipe, receipt_upload_adv, Select_element, Test
 from forms import button_for_script, button1_for_script, keyword, Trytest
 from forms import RegistrationForm, LoginForm, user_preference, pimage
@@ -63,8 +63,6 @@ class Items(db.Model, UserMixin):
                f" user_id: '{self.user_id}')"
 
 
-db.create_all()
-
 ###########
 # routes
 ###########
@@ -78,9 +76,6 @@ def index():
         my_user = User.query.filter_by(id=current_id).first()
         items = get_items(0)
         popular = get_popular_items(my_user.num_of_items)
-        # try:
-        # except:
-    #       popular = pd.DataFrame(columns=["item", "path"])
         form = button_for_script()
         form1 = button1_for_script()
 
@@ -546,7 +541,6 @@ def get_popular_items(num_of_items):
 
 
 def search_img(search_query):
-    access_key = "KtozeG1fDJdYwiTtQRpDr0XVaSb_NyT_mKbBQ2gI1lg"
     url = "https://api.unsplash.com/search/photos/"
     parameter = {"client_id": access_key,
                  "query": search_query.split()[0]}
