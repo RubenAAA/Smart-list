@@ -106,7 +106,7 @@ def index():
 def manual_receipt():
 
     if current_user.is_authenticated:
-        form = receipt_upload()
+
         form2 = receipt_upload_adv()
         form3 = Select_element()
         showform3 = True
