@@ -20,7 +20,7 @@
                     <li><a href="my-lists">Previous lists</a>
                     <li><a href="find-recipe">Find recipe</a>
                     <li><a href="upload-receipt">Upload receipt</a>
-                    <li><a href="#">Analytics</a>
+                    <li><a href="analytics">Analytics</a>
                     <li style="float:right"><a href="logout">Logout</a>
                     <li style="float:right"><a class="active" href ="my-profile">My Profile</a>
                 {% else %}
@@ -32,16 +32,31 @@
             </ul>
         </div><br><br>
 <h2>Profile of {{name}} </h2><br>
-<img src="https://images.unsplash.com/photo-1591828762360-0c2588a1f6e8?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxzZWFyY2h8M3x8YW5pbWF0aW9uJTIwaGVhZHxlbnwwfHwwfA%3D%3D&auto=format&fit=crop&w=600&q=60" alt="Avatar" class="avatar">
+
+{% if User.profile_picture == "default" %}
+    <img src="static/profile_pic/default_pic.jpg" height="60">
+{% else %}
+    <img src="static/profile_pic/individual.jpg" height="60">
+{% endif %}
+
 <br><br><br><h5>Your current username: {{username}}<h5><br>
 <h5>Your current email address: {{email}}<h5><br><br>
+<hr>
+<h4>Uplod profile picture</h4>
+<form method="POST">
+    {{ form_img.hidden_tag() }}
+    <br>
+    {{ form_img.pimage() }}
+    <br><br>
+    {{ form_img.submit_button() }}
+</form><br>
 <hr>
 <h4> Change User Preference </h4>
 <form  method="POST">
   {{ form.hidden_tag() }}
-
-  {{ form.preference.label }} {{ form.preference() }}
   <br>
+  {{ form.preference.label }} {{ form.preference() }}
+  <br><br>
   {{ form.submit_button() }}
 
 </form><br>

@@ -68,7 +68,11 @@ class keyword(Form):
 
 
 class user_preference(FlaskForm):
-    preference = StringField("Change the amount of default items displayed")
+    preference = StringField("Change the amount of default items displayed", validators=[DataRequired()])
+    submit_button = SubmitField("Submit")
+
+class pimage(FlaskForm):
+    pimage = FileField("Profile Picture", validators=[DataRequired()])
     submit_button = SubmitField("Submit")
 
 class receipt_upload_adv(FlaskForm):
