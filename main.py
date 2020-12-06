@@ -7,11 +7,12 @@ from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash
+from sys import platform
 import requests
 import datetime
 import json
 import os
-from PIL import Image
+from PIL import Image, ImageFile
 import pandas as pd
 
 app = Flask(__name__)
@@ -20,7 +21,7 @@ app.config["SECRET_KEY"] = "enter-a-hard-to-guess-string"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # To change
 db = SQLAlchemy(app)  # To change
 bcrypt = Bcrypt(app)
-
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 
@@ -112,7 +113,12 @@ def manual_receipt():
         if form2.validate_on_submit():
             flash("This might take a few seconds")
             # get picture
-            assets_dirl = "static/"
+            if platform == "linux" or platform == "linux2":
+                assets_dirl = "/home/joel_treichler28/Smart-list/static/" #yes it's ugly and not good practice
+            else:
+                assets_dirl = "static/"
+    
+            
             filenamel = form2.receipt_picture.name + ".jpg"
             pathl = assets_dirl + filenamel
 
@@ -367,8 +373,11 @@ def my_profile():
 
             current_id = current_user.id
             my_user = User.query.filter_by(id=current_id).first()
-
-            file_path = "static/profile_pic/indivdual.jpg"
+            if platform == "linux" or platform == "linux2": # linux
+                file_path = "/home/joel_treichler28/Smart-list/static/profile_pic/indivdual.jpg" #yes I know it's not the good way
+            
+            else:
+                file_path = "static/profile_pic/indivdual.jpg"
             with open(file_path, "wb") as file:
                 file.write(form_img.content)
 
@@ -530,7 +539,10 @@ def get_popular_items(num_of_items):
             if a in i:
                 i = "Bad_name"
         filename = i.split()[0] + ".jpg"
-        filepath = save_img(img_url, "static/data/", filename)
+        if platform == "linux" or platform == "linux2":
+            filepath = save_img(img_url, "/home/joel_treichler28/Smart-list/static/data/", filename)
+        else:
+            filepath = save_img(img_url, "static/data/", filename)
         img_lst.append(filepath)
 
     data = {"item": top_n_lst,
@@ -611,4 +623,7 @@ def get_recipe_info(idn):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    if platform == "linux" or platform == "linux2":
+        app.run(debug=False, host="10.132.0.5", port=80)
+    else:
+        app.run(debug=True)
