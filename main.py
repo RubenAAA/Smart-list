@@ -1,4 +1,3 @@
-imoprt api_keys.py
 from forms import Select_recipe, receipt_upload_adv, Select_element, Test
 from forms import button_for_script, button1_for_script, keyword, Trytest
 from forms import RegistrationForm, LoginForm, user_preference, pimage
@@ -108,7 +107,7 @@ def manual_receipt():
             flash("This might take a few seconds")
             # get picture
             if platform == "linux" or platform == "linux2":
-                assets_dirl = "/home/joel_treichler28/Smart-list/static/"  # Added that so I don't have to change it manually on the server. yes it's ugly and not good practice
+                assets_dirl = "/home/joel_treichler28/Smart-list/static/"  # yes it's ugly and not good practice
             else:
                 assets_dirl = "static/"
             filenamel = form2.receipt_picture.name + ".jpg"
@@ -542,7 +541,7 @@ def get_popular_items(num_of_items):
 
 
 def search_img(search_query):
-
+    access_key = "KtozeG1fDJdYwiTtQRpDr0XVaSb_NyT_mKbBQ2gI1lg"
     url = "https://api.unsplash.com/search/photos/"
     parameter = {"client_id": access_key,
                  "query": search_query.split()[0]}
