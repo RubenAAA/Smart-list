@@ -158,7 +158,13 @@ def manual_receipt():
                 i = i["LineText"]
                 if i == "TOTAL" or i == "Total":  # stops it if no more items come
                     break
-                liste_product.append(i)
+                if i == "Subtotal" or i == "SUBTOTAL" or i == "CHF" or i == "Aktion" or i == "AKTION" or i == "chf":  # ignores useless elements
+                    continue
+                try:
+                    float(i)
+                except ValueError:
+                    liste_product.append(i)
+
             print(liste_product)
 
             # establish the choices for the list
@@ -195,8 +201,9 @@ def manual_receipt():
 
             # commit
             db.session.commit()
+            form3.element_chosen.choices = [(1, "")]
             flash("Items have been added to your current shopping list")
-
+            liste_product = [""]
             return redirect(url_for("index"))
 
         return render_template("upload-receipt.html", form2=form2,
