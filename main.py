@@ -1,4 +1,4 @@
-from api_keys import APIKEY, OCR_KEY, SQLALCHEMY_DATABASE_URI
+imoprt api_keys.py
 from forms import Select_recipe, receipt_upload_adv, Select_element, Test
 from forms import button_for_script, button1_for_script, keyword, Trytest
 from forms import RegistrationForm, LoginForm, user_preference, pimage
@@ -18,7 +18,7 @@ import pandas as pd
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "enter-a-hard-to-guess-string"
-app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # To change
 db = SQLAlchemy(app)  # To change
 bcrypt = Bcrypt(app)
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -125,7 +125,7 @@ def manual_receipt():
 
             # API Call
             payload = {'isOverlayRequired': "false",
-                       'apikey': OCR_KEY,
+                       'apikey': "498f0b56fb88957",
                        'language': "ger",
                        "isTable": "True",
                        "detectOrientation": "true",
@@ -373,6 +373,7 @@ def my_profile():
                 file.write(form_img.content)
 
             my_user.profile_picture = file_path
+
             db.session.commit()
 
             return render_template("my_profile,html",
@@ -456,7 +457,6 @@ def register_user(form_data):
         flash("That username is already taken!")
         return False
     hashed_password = bcrypt.generate_password_hash(form_data.password.data)
-    hashed_password = hashed_password.decode("utf-8", "ignore")
     user = User(fname=form_data.fname.data,
                 lname=form_data.lname.data,
                 uname=form_data.uname.data,
@@ -528,10 +528,11 @@ def get_popular_items(num_of_items):
 
         img_url = search_img(i)
         filename = i.split()[0] + ".jpg"
-        if platform == "linux" or platform == "linux2":
-            filepath = save_img(img_url, "/home/joel_treichler28/Smart-list/static/data/", filename)
-        else:
-            filepath = save_img(img_url, "static/data/", filename)
+        filepath = save_img(img_url, "static/data/", filename)
+        #if platform == "linux" or platform == "linux2":
+        #    filepath = save_img(img_url, "/home/joel_treichler28/Smart-list/static/data/", filename)
+        #else:
+
         img_lst.append(filepath)
 
     data = {"item": top_n_lst,
@@ -541,8 +542,9 @@ def get_popular_items(num_of_items):
 
 
 def search_img(search_query):
+
     url = "https://api.unsplash.com/search/photos/"
-    parameter = {"client_id": OCR_KEY,
+    parameter = {"client_id": access_key,
                  "query": search_query.split()[0]}
     r = requests.get(url, params=parameter)
     data = r.json()
@@ -608,7 +610,6 @@ def get_recipe_info(idn):
     for i in range(0, len(response["extendedIngredients"])):
         string_w_comments = response["extendedIngredients"][i]["originalString"]
         stripped = string_w_comments.split(" (", 1)[0]
-        stripped = stripped.split(" -", 1)[0]
         ingredients.append(stripped)
     return ingredients
 
