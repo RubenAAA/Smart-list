@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm, Form
-from wtforms import StringField, SubmitField, PasswordField, SelectField, TextAreaField, IntegerField
+from wtforms import StringField, SubmitField, PasswordField,\
+    SelectField, TextAreaField, IntegerField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired
 # We need the following two for the file upload forms:
@@ -71,8 +72,10 @@ class keyword(Form):
 
 
 class user_preference(FlaskForm):
-    preference = StringField("Change the amount of default items displayed", validators=[DataRequired()])
+    preference = StringField("Change the amount of default items displayed",
+                             validators=[DataRequired()])
     submit_button = SubmitField("Submit")
+
 
 class pimage(FlaskForm):
     pimage = FileField("Profile Picture", validators=[DataRequired()])
@@ -81,11 +84,15 @@ class pimage(FlaskForm):
 
 class receipt_upload_adv(FlaskForm):
     receipt_picture = FileField("Upload your receipt",
-                                validators=[DataRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
+                                validators=[DataRequired(),
+                                            FileAllowed(['jpg', 'png'],
+                                                        'Images only!')])
     submit_button = SubmitField("Upload")
 
 
 class Select_element(Form):
     element_chosen = SelectField(
-        'Choose the first product bought', validate_choice=False, choices=[("Place"), ("Holder")], validators=[DataRequired()])
+        'Choose the first product bought', validate_choice=False,
+        choices=[("Place"), ("Holder")],
+        validators=[DataRequired()])
     submit_button = SubmitField('Confirm')

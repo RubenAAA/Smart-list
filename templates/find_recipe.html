@@ -32,27 +32,9 @@
         </div><br>
 
 <h3>Find Recipe</h3>
-<<<<<<< HEAD
-<h6>Don't know what you need? Here is an easy way to find the ingredients of your favored recipe</h6>
 
-<script type="text/javascript">
-        function toggle_display(){
-          el = document.querySelector('.content_section');
-          el2 = document.querySelector('.content2_section');
-
-          if(el.style.display == 'none'){
-              el.style.display = 'block'
-              el2.style.display = "none"
-          }else{
-             el.style.display = 'none'
-             el2.style.display = "block"
-          }
-        }
-</script>
-=======
 <h6>Don't know what you need? Here is a easy way to find the ingredients of your favored recipe</h6><br>
 {% if choices == [] %}
->>>>>>> 91c02c9136bb6b47a67984b410ae1441b6951ae4
 <form  method="post"  class="formscss">
   {{ form_diet.hidden_tag() }}
 
