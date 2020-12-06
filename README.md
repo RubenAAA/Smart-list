@@ -32,6 +32,10 @@ To Launch the application on your machine, you need to run the startup.py first 
 ## How to use Smartlist
 Smartlist provides you with everything you need to write, modify and view shopping lists. Additionally, SmartList provides you with a list of your most frequently bought items, functionalities to add items based on recipes and a basic analytics page.
 
+### Navigating the Main Page
+
+
+
 To make use of these features, you first of all need to make an account by clicking on the _register_ button found in the Navbar. After the registration and login, head to the main page to make your first SmartList!
 
 The items you wish to put onto your list are added one by one under the _add a product to your Shoppinglist_ subheader. To add the product to the list simply click the _submit_ button.
