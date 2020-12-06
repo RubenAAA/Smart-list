@@ -1,30 +1,23 @@
-from api_keys import APIKEY, SQLALCHEMY_DATABASE_URI, OCR_KEY, access_key
+from api_keys import APIKEY, access_key
 from forms import Select_recipe, receipt_upload_adv, Select_element, Test
 from forms import button_for_script, button1_for_script, keyword, Trytest
 from forms import RegistrationForm, LoginForm, user_preference, pimage
-from sys import platform
-from PIL import Image, ImageFile
-import pandas as pd
-from PIL import Image
-from io import BytesIO
-import os
-import json
-import datetime
-import requests
-from werkzeug.utils import secure_filename
-from flask import Flask, render_template, redirect, url_for, flash, request
-from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash
+import requests
+import datetime
+import json
+import os
+from PIL import Image
+import pandas as pd
+
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "enter-a-hard-to-guess-string"
-app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI  
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # To change
 db = SQLAlchemy(app)  # To change
 bcrypt = Bcrypt(app)
 
@@ -43,7 +36,7 @@ class User(db.Model, UserMixin):
     lname = db.Column(db.String(60), nullable=False)
     uname = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
     items = db.relationship("Items", backref="opp", lazy=True)
     num_of_items = db.Column(db.Integer, default=5)
     profile_picture = db.Column(db.String(100), default="default")
@@ -69,8 +62,6 @@ class Items(db.Model, UserMixin):
                f" user_id: '{self.user_id}')"
 
 db.create_all()
-
-
 
 ###########
 # routes
@@ -141,7 +132,7 @@ def manual_receipt():
 
             # API Call
             payload = {'isOverlayRequired': "false",
-                       'apikey': OCR_KEY,
+                       'apikey': "498f0b56fb88957",
                        'language': "ger",
                        "isTable": "True",
                        "detectOrientation": "true",
@@ -473,7 +464,6 @@ def register_user(form_data):
         flash("That username is already taken!")
         return False
     hashed_password = bcrypt.generate_password_hash(form_data.password.data)
-    hashed_password = hashed_password.decode("utf-8", "ignore")
     user = User(fname=form_data.fname.data,
                 lname=form_data.lname.data,
                 uname=form_data.uname.data,
