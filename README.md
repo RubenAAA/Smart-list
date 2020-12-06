@@ -20,7 +20,7 @@ Naturally, we also had to host the application and the corresponding SQL databas
 ## Additional features:
 For the additional features, we tried to experiment with some of the functionalities we have covered in class to make the user experience as smooth as possible.
 
-The "Scan Receipt" utilises Google's Vision API to upload past shopping lists to the users database. In this way, the user's suggested items can be optimised without the hassle of typing in each item individually.
+The "Scan Receipt" utilises an OCR API to upload past shopping lists to the users database. In this way, the user's suggested items can be optimised without the hassle of typing in each item individually.
 
 While the "Scan Receipt" function is meant to improve the items suggested to an user in a convenient way, the "find recipe" feature is meant to make finding the desired ingredients for a recipe easier and directly integrated into the process of making shopping lists. It asks the user about what he wants to cook, as well as dietary preferences and allergies amongst others. Making use of an API it then returns a list of ingredients which can be directly added to the current shopping list.
 
