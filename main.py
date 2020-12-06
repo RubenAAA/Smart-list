@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-import pandas as pd
-import os
-import json
-import datetime
-import requests
-import sqlite3
-from PIL import Image
-from io import BytesIO
-from werkzeug.utils import secure_filename
-from flask import Flask, render_template, redirect, url_for, flash, request
-from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, UserMixin, login_user, current_user
-from flask_login import logout_user, login_required
-from forms import RegistrationForm, LoginForm, receipt_upload, user_preference
-from forms import button_for_script, button1_for_script, keyword, Trytest, Select_recipe, receipt_upload_adv, Select_element, Test, pimage
-from api_keys import APIKEY, OCRKEY
-=======
 from api_keys import APIKEY
 from forms import Select_recipe, receipt_upload_adv, Select_element, Test
 from forms import button_for_script, button1_for_script, keyword, Trytest
@@ -32,7 +13,6 @@ import json
 import os
 from PIL import Image
 import pandas as pd
->>>>>>> 91c02c9136bb6b47a67984b410ae1441b6951ae4
 
 app = Flask(__name__)
 
