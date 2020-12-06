@@ -1,21 +1,12 @@
-<<<<<<< Updated upstream
-=======
 from api_keys import APIKEY, SQLALCHEMY_DATABASE_URI, OCR_KEY
 from forms import Select_recipe, receipt_upload_adv, Select_element, Test
 from forms import button_for_script, button1_for_script, keyword, Trytest
 from forms import RegistrationForm, LoginForm, user_preference, pimage
-from flask_login import logout_user, login_required
-from flask_login import LoginManager, UserMixin, login_user, current_user
-from flask_bcrypt import Bcrypt
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, redirect, url_for, flash
 from sys import platform
-import requests
 import datetime
 import json
 import os
 from PIL import Image, ImageFile
->>>>>>> Stashed changes
 import pandas as pd
 from PIL import Image
 from io import BytesIO
@@ -55,12 +46,7 @@ class User(db.Model, UserMixin):
     lname = db.Column(db.String(60), nullable=False)
     uname = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-<<<<<<< Updated upstream
-    password = db.Column(db.String(100), nullable=False)
-    
-=======
     password = db.Column(db.String(120), nullable=False)
->>>>>>> Stashed changes
     items = db.relationship("Items", backref="opp", lazy=True)
     num_of_items = db.Column(db.Integer, default=5)
 
@@ -85,11 +71,8 @@ class Items(db.Model, UserMixin):
                f" user_id: '{self.user_id}')"
 
 
-<<<<<<< Updated upstream
-=======
 
 
->>>>>>> Stashed changes
 ###########
 # routes
 ###########

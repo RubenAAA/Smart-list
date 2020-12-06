@@ -1,2 +1,9 @@
 APIKEY = "9da2f73c89msh93d02299250d2d3p11c66djsnf01090a6a4b6"
-
+OCR_KEY = "498f0b56fb88957"
+# Google Cloud SQL 
+PASSWORD ="philips"
+PUBLIC_IP_ADDRESS ="35.205.8.8"
+DBNAME ="postgres"
+PROJECT_ID ="dscs-joel"
+INSTANCE_NAME ="gcp-final"
+SQLALCHEMY_DATABASE_URI  = f"postgresql://postgres:{PASSWORD}@{PUBLIC_IP_ADDRESS}/{DBNAME}"
