@@ -18,7 +18,7 @@ import pandas as pd
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "enter-a-hard-to-guess-string"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # To change
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI  # To change
 db = SQLAlchemy(app)  # To change
 bcrypt = Bcrypt(app)
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -457,6 +457,7 @@ def register_user(form_data):
         flash("That username is already taken!")
         return False
     hashed_password = bcrypt.generate_password_hash(form_data.password.data)
+    hashed_password = hashed_password.decode("utf-8", "ignore")
     user = User(fname=form_data.fname.data,
                 lname=form_data.lname.data,
                 uname=form_data.uname.data,
@@ -531,10 +532,10 @@ def get_popular_items(num_of_items):
         img_url = search_img(i)
         filename = i.split()[0] + ".jpg"
         filepath = save_img(img_url, "static/data/", filename)
-        # if platform == "linux" or platform == "linux2":
-        #    filepath = save_img(img_url, "/home/joel_treichler28/Smart-list/static/data/", filename)
-        # else:
-
+        if platform == "linux" or platform == "linux2":
+            filepath = save_img(img_url, "/home/joel_treichler28/Smart-list/static/data/", filename)
+        else:
+            filepath = save_img(img_url, "static/data/", filename)
         img_lst.append(filepath)
 
     data = {"item": top_n_lst,
@@ -611,6 +612,7 @@ def get_recipe_info(idn):
     for i in range(0, len(response["extendedIngredients"])):
         string_w_comments = response["extendedIngredients"][i]["originalString"]
         stripped = string_w_comments.split(" (", 1)[0]
+        stripped = stripped.split(" -", 1)[0]
         ingredients.append(stripped)
     return ingredients
 
