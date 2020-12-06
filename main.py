@@ -1,19 +1,18 @@
-import pandas as pd
-from PIL import Image
-from io import BytesIO
-import os
-import json
-import datetime
-import requests
-from werkzeug.utils import secure_filename
-from flask import Flask, render_template, redirect, url_for, flash, request
-from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, UserMixin, login_user, current_user
-from flask_login import logout_user, login_required
-from forms import RegistrationForm, LoginForm, receipt_upload, user_preference
-from forms import button_for_script, button1_for_script, keyword, Trytest, Select_recipe, receipt_upload_adv, Select_element, Test
 from api_keys import APIKEY
+from forms import Select_recipe, receipt_upload_adv, Select_element, Test
+from forms import button_for_script, button1_for_script, keyword, Trytest
+from forms import RegistrationForm, LoginForm, user_preference
+from flask_login import logout_user, login_required
+from flask_login import LoginManager, UserMixin, login_user, current_user
+from flask_bcrypt import Bcrypt
+from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template, redirect, url_for, flash
+import requests
+import datetime
+import json
+import os
+from PIL import Image
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -112,7 +111,6 @@ def manual_receipt():
         showform3 = True
         form3.element_chosen.choices = []
         liste_product = Test().product_list
-        
 
         if form2.validate_on_submit():
             flash("This might take a few seconds")
@@ -166,8 +164,7 @@ def manual_receipt():
                     float(i)
                 except ValueError:
                     liste_product.append(i)
-                
-                
+
             print(liste_product)
 
             # establish the choices for the list
@@ -186,7 +183,7 @@ def manual_receipt():
 
             showform3 = True
 
-            #redirect(url_for("manual_receipt"))
+            # redirect(url_for("manual_receipt"))
 
         if form3.validate_on_submit():
 
@@ -195,21 +192,22 @@ def manual_receipt():
             print(liste_product)
             # add to DB
 
-            for l in liste_product[iterator:]:  # iterates starting with element chosen
-                print(l)
-                product = Items(item=l,  # add to  list
+            for li in liste_product[iterator:]:  # iterates starting with element chosen
+                print(li)
+                product = Items(item=li,  # add to  list
                                 date_created=datetime.datetime.now(),
                                 user_id=current_user.id)
                 db.session.add(product)
 
             # commit
             db.session.commit()
-            form3.element_chosen.choices = [(1,"")]
+            form3.element_chosen.choices = [(1, "")]
             flash("Items have been added to your current shopping list")
             liste_product = [""]
             return redirect(url_for("index"))
 
-        return render_template("upload-receipt.html", form2=form2, showform3=showform3, form3=form3)
+        return render_template("upload-receipt.html", form2=form2,
+                               showform3=showform3, form3=form3)
     else:
         return redirect(url_for("login"))
 
@@ -310,7 +308,6 @@ def analytics():
 @app.route("/find-recipe", methods=["GET", "POST"])
 def findrec():
     if current_user.is_authenticated:
-        # Find recipe from keyword
         form_diet = keyword()
         form2 = Trytest()
         choices = []
@@ -338,12 +335,13 @@ def findrec():
             id_df = get_recipe_id(form_diet.query.data, form_diet.diet.data,
                                   form_diet.excludeIngredients.data,
                                   form_diet.intolerances.data,
-                                  10)  # idk why but this is necessary
+                                  10)
             add_items_from_list(get_recipe_info(id_df["id"][n]),
                                 len(get_recipe_info(id_df["id"][n])))
             return redirect(url_for("index"))
         return render_template("find_recipe.html",
-                               form_diet=form_diet, form2=form2, choices=choices)
+                               form_diet=form_diet, form2=form2,
+                               choices=choices)
     else:
         return redirect(url_for("login"))
 
@@ -436,8 +434,8 @@ def register_user(form_data):
                 uname=form_data.uname.data,
                 email=form_data.email.data,
                 password=hashed_password)
-    db.session.add(user)  # local sql databasr
-    db.session.commit()  # local sql databasr
+    db.session.add(user)
+    db.session.commit()
     return True
 
 
@@ -547,7 +545,7 @@ def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
               "intolerances": intolerances,
               "number": number}
     headers = {
-        'x-rapidapi-key': APIKEY,  # still have to register
+        'x-rapidapi-key': APIKEY,
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers, params=querys)
@@ -566,7 +564,7 @@ def get_recipe_info(idn):
     idn = str(idn)
     url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/" + idn + "/information"
     headers = {
-        'x-rapidapi-key': APIKEY,  # still have to register
+        'x-rapidapi-key': APIKEY,
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers)

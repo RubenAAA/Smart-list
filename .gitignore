@@ -1,2 +1,4 @@
 
 .vscode/settings.json
+api_keys.py
+db_startup.py
