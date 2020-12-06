@@ -38,7 +38,7 @@ class User(db.Model, UserMixin):
     uname = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    receipts = db.relationship("Receipts", backref="op", lazy=True)
+    
     items = db.relationship("Items", backref="opp", lazy=True)
     num_of_items = db.Column(db.Integer, default=5)
 
