@@ -18,7 +18,7 @@ import pandas as pd
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "enter-a-hard-to-guess-string"
-app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI  
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 db = SQLAlchemy(app)  # To change
 bcrypt = Bcrypt(app)
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -125,7 +125,7 @@ def manual_receipt():
 
             # API Call
             payload = {'isOverlayRequired': "false",
-                       'apikey':OCR_KEY,
+                       'apikey': OCR_KEY,
                        'language': "ger",
                        "isTable": "True",
                        "detectOrientation": "true",
@@ -608,6 +608,7 @@ def get_recipe_info(idn):
     for i in range(0, len(response["extendedIngredients"])):
         string_w_comments = response["extendedIngredients"][i]["originalString"]
         stripped = string_w_comments.split(" (", 1)[0]
+        stripped = stripped.split(" -", 1)[0]
         ingredients.append(stripped)
     return ingredients
 
