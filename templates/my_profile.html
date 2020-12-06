@@ -33,7 +33,7 @@
         </div><br><br>
 <h2>Profile of {{name}} </h2><br>
 
-{% if User.query.filter_by(profile_picture = "default") %}
+{% if User.profile_picture == "default" %}
     <img src="static/profile_pic/default_pic.jpg" height="60">
 {% else %}
     <img src="static/profile_pic/individual.jpg" height="60">

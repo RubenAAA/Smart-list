@@ -7,11 +7,12 @@ from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash
+from sys import platform
 import requests
 import datetime
 import json
 import os
-from PIL import Image
+from PIL import Image, ImageFile
 import pandas as pd
 
 app = Flask(__name__)
@@ -20,7 +21,7 @@ app.config["SECRET_KEY"] = "enter-a-hard-to-guess-string"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # To change
 db = SQLAlchemy(app)  # To change
 bcrypt = Bcrypt(app)
-
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 
@@ -61,7 +62,6 @@ class Items(db.Model, UserMixin):
                f" date_created: '{self.date_created}', " +\
                f" user_id: '{self.user_id}')"
 
-db.create_all()
 
 ###########
 # routes
@@ -76,26 +76,16 @@ def index():
         my_user = User.query.filter_by(id=current_id).first()
         items = get_items(0)
         popular = get_popular_items(my_user.num_of_items)
-        #try:
-        #except:
-    #       popular = pd.DataFrame(columns=["item", "path"])
         form = button_for_script()
         form1 = button1_for_script()
 
         if form.validate_on_submit():
             add_item(form)
-            # items = get_items()
             return redirect(url_for("index"))
-            # return render_template("index.html", form=form, form1=form1,
-            #                         items=items, popular=popular)
 
         if form1.validate_on_submit():
             attribute_session_id()
-            # items = get_items()
-            # popular = get_popular_items(5)
             return redirect(url_for("index"))
-            # return render_template("index.html", form=form, form1=form1,
-            #                         items=items, popular=popular)
 
         return render_template("index.html", form=form,
                                form1=form1, items=items, popular=popular)
@@ -117,7 +107,10 @@ def manual_receipt():
         if form2.validate_on_submit():
             flash("This might take a few seconds")
             # get picture
-            assets_dirl = "static/"
+            if platform == "linux" or platform == "linux2":
+                assets_dirl = "/home/joel_treichler28/Smart-list/static/"  # yes it's ugly and not good practice
+            else:
+                assets_dirl = "static/"
             filenamel = form2.receipt_picture.name + ".jpg"
             pathl = assets_dirl + filenamel
 
@@ -354,8 +347,6 @@ def my_profile():
         name, username, email = get_name()
         form = user_preference()
         form_img = pimage()
-
-
         if form.validate_on_submit():
             pref = form.preference.data
 
@@ -372,23 +363,25 @@ def my_profile():
 
             current_id = current_user.id
             my_user = User.query.filter_by(id=current_id).first()
+            if platform == "linux" or platform == "linux2":  # linux
+                # yes I know it's not the good way
+                file_path = "/home/joel_treichler28/Smart-list/static/profile_pic/indivdual.jpg"
 
-            file_path = "static/profile_pic/indivdual.jpg"
+            else:
+                file_path = "static/profile_pic/indivdual.jpg"
             with open(file_path, "wb") as file:
                 file.write(form_img.content)
 
-            image = User(profile_picture="individual")
-            db.session.add(image)
+            my_user.profile_picture = file_path
             db.session.commit()
 
             return render_template("my_profile,html",
-                                    name=name,
-                                    username=username,
-                                    email=email,
-                                    form=form,
-                                    form_img=form_img,
-                                    User=User)
-
+                                   name=name,
+                                   username=username,
+                                   email=email,
+                                   form=form,
+                                   form_img=form_img,
+                                   User=User)
 
         return render_template("my_profile.html",
                                name=name,
@@ -416,7 +409,6 @@ def register():
 
 @ app.route("/login", methods=["GET", "POST"])
 def login():
-    user_id=2
     if current_user.is_authenticated:
         return redirect(url_for("index"))
     form = LoginForm()
@@ -530,14 +522,15 @@ def get_popular_items(num_of_items):
     top_n_lst = current_df['item'].value_counts()[:num_of_items].index.tolist()
     img_lst = []
     for i in top_n_lst:
-        i = i.replace("-", "_").replace("/", "_").replace("&", "_").replace(":", "_")\
-             .replace("#", "_").replace("%", "_").replace("!", "_").replace("?", "_")
-        #for a in i:
+        i = i.replace("!", "_").replace("?", "_").replace("-", "_").replace("/", "_")\
+             .replace("%", "_").replace("&", "_").replace(":", "_").replace(";", "_")
+
         img_url = search_img(i)
-        #forbidden = [ '&', ";", "*", "?", "-"]
-        #for a in forbidden:
         filename = i.split()[0] + ".jpg"
-        filepath = save_img(img_url, "static/data/", filename)
+        if platform == "linux" or platform == "linux2":
+            filepath = save_img(img_url, "/home/joel_treichler28/Smart-list/static/data/", filename)
+        else:
+            filepath = save_img(img_url, "static/data/", filename)
         img_lst.append(filepath)
 
     data = {"item": top_n_lst,
@@ -547,7 +540,6 @@ def get_popular_items(num_of_items):
 
 
 def search_img(search_query):
-    access_key = "KtozeG1fDJdYwiTtQRpDr0XVaSb_NyT_mKbBQ2gI1lg"
     url = "https://api.unsplash.com/search/photos/"
     parameter = {"client_id": access_key,
                  "query": search_query.split()[0]}
@@ -559,6 +551,7 @@ def search_img(search_query):
     except:
         default_url = "https://thumbs.dreamstime.com/b/no-image-available-icon-photo-camera-flat-vector-illustration-132483296.jpg"
         return default_url
+
 
 def save_img(img_url, folder_prefix, filename):
     img = requests.get(img_url)
@@ -602,7 +595,8 @@ def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
 
 def get_recipe_info(idn):
     idn = str(idn)
-    url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/" + idn + "/information"
+    url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/"  \
+        + idn + "/information"
     headers = {
         'x-rapidapi-key': APIKEY,
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
@@ -611,9 +605,14 @@ def get_recipe_info(idn):
     response = response.json()
     ingredients = []
     for i in range(0, len(response["extendedIngredients"])):
-        ingredients.append(response["extendedIngredients"][i]["originalString"])
+        string_w_comments = response["extendedIngredients"][i]["originalString"]
+        stripped = string_w_comments.split(" (", 1)[0]
+        ingredients.append(stripped)
     return ingredients
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    if platform == "linux" or platform == "linux2":
+        app.run(debug=False, host="10.132.0.5", port=80)
+    else:
+        app.run(debug=True)
