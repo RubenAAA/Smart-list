@@ -1,7 +1,7 @@
 from api_keys import APIKEY
 from forms import Select_recipe, receipt_upload_adv, Select_element, Test
 from forms import button_for_script, button1_for_script, keyword, Trytest
-from forms import RegistrationForm, LoginForm, user_preference
+from forms import RegistrationForm, LoginForm, user_preference, pimage
 from flask_login import logout_user, login_required
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_bcrypt import Bcrypt
@@ -61,6 +61,7 @@ class Items(db.Model, UserMixin):
                f" date_created: '{self.date_created}', " +\
                f" user_id: '{self.user_id}')"
 
+
 db.create_all()
 
 ###########
@@ -76,20 +77,18 @@ def index():
         my_user = User.query.filter_by(id=current_id).first()
         items = get_items(0)
         popular = get_popular_items(my_user.num_of_items)
-        #try:
-        #except:
+        # try:
+        # except:
     #       popular = pd.DataFrame(columns=["item", "path"])
         form = button_for_script()
         form1 = button1_for_script()
 
         if form.validate_on_submit():
             add_item(form)
-
             return redirect(url_for("index"))
 
         if form1.validate_on_submit():
             attribute_session_id()
-
             return redirect(url_for("index"))
 
         return render_template("index.html", form=form,
@@ -349,8 +348,6 @@ def my_profile():
         name, username, email = get_name()
         form = user_preference()
         form_img = pimage()
-
-
         if form.validate_on_submit():
             pref = form.preference.data
 
@@ -376,13 +373,12 @@ def my_profile():
             db.session.commit()
 
             return render_template("my_profile,html",
-                                    name=name,
-                                    username=username,
-                                    email=email,
-                                    form=form,
-                                    form_img=form_img,
-                                    User=User)
-
+                                   name=name,
+                                   username=username,
+                                   email=email,
+                                   form=form,
+                                   form_img=form_img,
+                                   User=User)
 
         return render_template("my_profile.html",
                                name=name,
@@ -410,7 +406,6 @@ def register():
 
 @ app.route("/login", methods=["GET", "POST"])
 def login():
-    user_id=2
     if current_user.is_authenticated:
         return redirect(url_for("index"))
     form = LoginForm()
@@ -525,7 +520,7 @@ def get_popular_items(num_of_items):
     img_lst = []
     for i in top_n_lst:
         img_url = search_img(i)
-        forbidden = [ '&', ";", "*", "?", "-"]
+        forbidden = ['&', ";", "*", "?", "-"]
         for a in forbidden:
             if a in i:
                 i = "Bad_name"
@@ -552,6 +547,7 @@ def search_img(search_query):
     except:
         default_url = "https://thumbs.dreamstime.com/b/no-image-available-icon-photo-camera-flat-vector-illustration-132483296.jpg"
         return default_url
+
 
 def save_img(img_url, folder_prefix, filename):
     img = requests.get(img_url)
