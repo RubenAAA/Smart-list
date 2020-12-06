@@ -83,5 +83,5 @@ class receipt_upload_adv(FlaskForm):
 
 class Select_element(Form):
     element_chosen = SelectField(
-        'Choose the first prduct bought', validate_choice=False, choices=[("Aids"), ("HIV")], validators=[DataRequired()])
+        'Choose the first prduct bought', validate_choice=False, choices=[("choice1"), ("choice2")], validators=[DataRequired()])
     submit_button = SubmitField('Confirm')
