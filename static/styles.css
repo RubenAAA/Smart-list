@@ -41,6 +41,7 @@ p {
 }
 
 .card {
+  height: 130px;
   display: block;
   margin-left:70px;
   margin-right:70px;
@@ -116,6 +117,9 @@ li a:hover {
 .btn primary {
     background-color:grey;
     color:black;
+}
+.btn {
+    color:red;
 }
 .facebook {
     background-color: #3b5998;
