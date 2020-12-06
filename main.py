@@ -113,11 +113,9 @@ def manual_receipt():
             flash("This might take a few seconds")
             # get picture
             if platform == "linux" or platform == "linux2":
-                assets_dirl = "/home/joel_treichler28/Smart-list/static/" #yes it's ugly and not good practice
+                assets_dirl = "/home/joel_treichler28/Smart-list/static/"  # yes it's ugly and not good practice
             else:
                 assets_dirl = "static/"
-    
-            
             filenamel = form2.receipt_picture.name + ".jpg"
             pathl = assets_dirl + filenamel
 
@@ -370,9 +368,10 @@ def my_profile():
 
             current_id = current_user.id
             my_user = User.query.filter_by(id=current_id).first()
-            if platform == "linux" or platform == "linux2": # linux
-                file_path = "/home/joel_treichler28/Smart-list/static/profile_pic/indivdual.jpg" #yes I know it's not the good way
-            
+            if platform == "linux" or platform == "linux2":  # linux
+                # yes I know it's not the good way
+                file_path = "/home/joel_treichler28/Smart-list/static/profile_pic/indivdual.jpg"
+
             else:
                 file_path = "static/profile_pic/indivdual.jpg"
             with open(file_path, "wb") as file:
