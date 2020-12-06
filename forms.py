@@ -41,7 +41,7 @@ class receipt_upload(FlaskForm):
 
 class button_for_script(FlaskForm):
     item = StringField("Product", validators=[DataRequired()])
-    submit_button = SubmitField("Submit")
+    submit_button = SubmitField("Add item to shopping list")
 
 
 class button1_for_script(FlaskForm):

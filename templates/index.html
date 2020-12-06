@@ -51,13 +51,14 @@
           {{ form.hidden_tag() }}
 
           {{ form.item.label }} {{ form.item() }}
-          <br>
+          <br><br>
           {{ form.submit_button() }}
 
       </form><br>
 
         <br>
         <h2> The items you most often buy </h2>
+        <br>
 <div class="row">
         {% for index, row in popular.iterrows() %}
         <br>
