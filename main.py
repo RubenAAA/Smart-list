@@ -209,7 +209,7 @@ def manual_receipt():
             liste_product = [""]
             return redirect(url_for("index"))
 
-        return render_template("upload-receipt.html", form=form, form2=form2, showform3=showform3, form3=form3)
+        return render_template("upload-receipt.html", form2=form2, showform3=showform3, form3=form3)
     else:
         return redirect(url_for("login"))
 
