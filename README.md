@@ -20,11 +20,10 @@ Naturally, we also had to host the application and the corresponding SQL databas
 ## Additional features:
 For the additional features, we tried to experiment with some of the functionalities we have covered in class to make the user experience as smooth as possible.
 
-The "Scan Receipt" utilises Google's Vision API to upload past shopping lists to the users database. In this way, the user's suggested items can be optimised without the hassle of typing in each item individually.
+The "Scan Receipt" utilises Optical Image Recognition API to upload past shopping lists to the users database. In this way, the user's suggested items can be optimised without the hassle of typing in each item individually.
 
 While the "Scan Receipt" function is meant to improve the items suggested to an user in a convenient way, the "find recipe" feature is meant to make finding the desired ingredients for a recipe easier and directly integrated into the process of making shopping lists. It asks the user about what he wants to cook, as well as dietary preferences and allergies amongst others. Making use of an API it then returns a list of ingredients which can be directly added to the current shopping list.
 
-<<<<<<< HEAD
 Furthermore, the analytics page provides the user with a comprehensive overview of their buying behaviour at a quick glance. It includes information about the composition of items bought.    
 =======
 Furthermore, the analytics page provides the user with a comprehensive overview of their buying behaviour at a quick glance. It includes information about the composition of items bought amongst others.
@@ -39,7 +38,6 @@ To make use of these features, you first of all need to make an account by click
 
 The items you wish to put onto your list are added one by one trough the _add product_  
 
->>>>>>> c916814bab647c1e533edbf8dcee1e9861442c81
 
 ## Challenges and Issues:
 The additional features are the ones we think will be more time consuming and more difficult to implement. Therefore, as a beginning, we plan on having a site which analyses previous purchases (manually inputted by user) and outputs a possible shopping list for the user. Then, the additional features will serve to better the user experience by requiring less or no manual input. Also, some features that add recipes from databases to the shopping list are planned. In addition, the food intake analysis can become more advanced.
