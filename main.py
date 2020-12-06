@@ -13,7 +13,7 @@ from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_login import logout_user, login_required
 from forms import RegistrationForm, LoginForm, receipt_upload, user_preference
 from forms import button_for_script, button1_for_script, keyword, Trytest, Select_recipe, receipt_upload_adv, Select_element, Test
-from api_keys import APIKEY, OCRKEY
+from api_keys import APIKEY
 
 app = Flask(__name__)
 
@@ -114,6 +114,7 @@ def manual_receipt():
         showform3 = True
         form3.element_chosen.choices = []
         liste_product = Test().product_list
+        
 
         if form2.validate_on_submit():
             flash("This might take a few seconds")
@@ -157,13 +158,20 @@ def manual_receipt():
                 flash("Error in Parsing the File try another one")
                 return redirect(url_for("manual_receipt"))
 
-
+            print(response)
 
             for i in response[3:]:  # starts at 3 because everything beforhand will be information about the shop
                 i = i["LineText"]
                 if i == "TOTAL" or i == "Total":  # stops it if no more items come
                     break
-                liste_product.append(i)
+                if i == "Subtotal" or i == "SUBTOTAL" or i == "CHF" or i == "Aktion" or i == "AKTION" or i == "chf":  # ignores useless elements
+                    continue
+                try:
+                    float(i)
+                except ValueError:
+                    liste_product.append(i)
+                
+                
             print(liste_product)
 
 
@@ -187,8 +195,6 @@ def manual_receipt():
 
             #redirect(url_for("manual_receipt"))
 
-
-
         if form3.validate_on_submit():
 
             print(form3.element_chosen.data)
@@ -206,8 +212,9 @@ def manual_receipt():
 
             #commit
             db.session.commit()
+            form3.element_chosen.choices = [(1,"")]
             flash("Items have been added to your current shopping list")
-
+            liste_product = [""]
             return redirect(url_for("index"))
 
 

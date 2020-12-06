@@ -5,6 +5,7 @@ from wtforms.validators import DataRequired
 # We need the following two for the file upload forms:
 # from flask_wtf.file import FileField
 # from flask_wtf import Form
+
 class Test: #don't delete
     product_list = []
 
@@ -78,7 +79,7 @@ class receipt_upload_adv(FlaskForm):
 
 class Select_element(Form):
     element_chosen = SelectField(
-        'Choose the first prduct bought', validate_choice=False, choices=[("Aids"), ("HIV")], validators=[DataRequired()])
+        'Choose the first product bought', validate_choice=False, choices=[("Place"), ("Holder")], validators=[DataRequired()])
     submit_button = SubmitField('Confirm')
 """
 Advanced functionalities
