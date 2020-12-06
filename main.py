@@ -1,4 +1,4 @@
-from api_keys import APIKEY, access_key
+from api_keys import APIKEY, OCR_KEY, SQLALCHEMY_DATABASE_URI
 from forms import Select_recipe, receipt_upload_adv, Select_element, Test
 from forms import button_for_script, button1_for_script, keyword, Trytest
 from forms import RegistrationForm, LoginForm, user_preference, pimage
@@ -18,7 +18,7 @@ import pandas as pd
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "enter-a-hard-to-guess-string"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # To change
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI  
 db = SQLAlchemy(app)  # To change
 bcrypt = Bcrypt(app)
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -125,7 +125,7 @@ def manual_receipt():
 
             # API Call
             payload = {'isOverlayRequired': "false",
-                       'apikey': "498f0b56fb88957",
+                       'apikey':OCR_KEY,
                        'language': "ger",
                        "isTable": "True",
                        "detectOrientation": "true",
@@ -456,6 +456,7 @@ def register_user(form_data):
         flash("That username is already taken!")
         return False
     hashed_password = bcrypt.generate_password_hash(form_data.password.data)
+    hashed_password = hashed_password.decode("utf-8", "ignore")
     user = User(fname=form_data.fname.data,
                 lname=form_data.lname.data,
                 uname=form_data.uname.data,
@@ -541,7 +542,7 @@ def get_popular_items(num_of_items):
 
 def search_img(search_query):
     url = "https://api.unsplash.com/search/photos/"
-    parameter = {"client_id": access_key,
+    parameter = {"client_id": OCR_KEY,
                  "query": search_query.split()[0]}
     r = requests.get(url, params=parameter)
     data = r.json()
