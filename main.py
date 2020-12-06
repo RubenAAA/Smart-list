@@ -520,6 +520,8 @@ def get_items(session_id):
 def get_popular_items(num_of_items):
     df = pd.read_sql(Items.query.statement, db.session.bind)
     current_df = df[df["user_id"] == current_user.id]
+    for item in current_df['item']:
+        item = item.upper()
     top_n_lst = current_df['item'].value_counts()[:num_of_items].index.tolist()
     img_lst = []
     for i in top_n_lst:
@@ -529,9 +531,9 @@ def get_popular_items(num_of_items):
         img_url = search_img(i)
         filename = i.split()[0] + ".jpg"
         filepath = save_img(img_url, "static/data/", filename)
-        #if platform == "linux" or platform == "linux2":
+        # if platform == "linux" or platform == "linux2":
         #    filepath = save_img(img_url, "/home/joel_treichler28/Smart-list/static/data/", filename)
-        #else:
+        # else:
 
         img_lst.append(filepath)
 
