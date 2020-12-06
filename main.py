@@ -38,7 +38,6 @@ class User(db.Model, UserMixin):
     uname = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    
     items = db.relationship("Items", backref="opp", lazy=True)
     num_of_items = db.Column(db.Integer, default=5)
 
@@ -104,11 +103,10 @@ def index():
 
 
 @app.route("/upload-receipt", methods=["GET", "POST"])
-
 def manual_receipt():
 
     if current_user.is_authenticated:
-        
+
         form2 = receipt_upload_adv()
         form3 = Select_element()
         showform3 = True
@@ -158,8 +156,6 @@ def manual_receipt():
                 flash("Error in Parsing the File try another one")
                 return redirect(url_for("manual_receipt"))
 
-            print(response)
-
             for i in response[3:]:  # starts at 3 because everything beforhand will be information about the shop
                 i = i["LineText"]
                 if i == "TOTAL" or i == "Total":  # stops it if no more items come
@@ -174,8 +170,7 @@ def manual_receipt():
                 
             print(liste_product)
 
-
-            #establish the choices for the list
+            # establish the choices for the list
             form_list = []
             c = 0
             for i in liste_product:
@@ -183,9 +178,7 @@ def manual_receipt():
                 c += 1
             form3.element_chosen.choices = [i for i in form_list]
 
-
-
-            #delete picture
+            # delete picture
             if os.path.exists(pathl):
                 os.remove(pathl)
             else:
@@ -202,24 +195,21 @@ def manual_receipt():
             print(liste_product)
             # add to DB
 
-
-            for l in liste_product[iterator:]: #iterates starting with element chosen
+            for l in liste_product[iterator:]:  # iterates starting with element chosen
                 print(l)
                 product = Items(item=l,  # add to  list
                                 date_created=datetime.datetime.now(),
                                 user_id=current_user.id)
                 db.session.add(product)
 
-            #commit
+            # commit
             db.session.commit()
             form3.element_chosen.choices = [(1,"")]
             flash("Items have been added to your current shopping list")
             liste_product = [""]
             return redirect(url_for("index"))
 
-
-
-        return render_template("upload-receipt.html", form2=form2, showform3 = showform3, form3 = form3)
+        return render_template("upload-receipt.html", form=form, form2=form2, showform3=showform3, form3=form3)
     else:
         return redirect(url_for("login"))
 
@@ -231,66 +221,70 @@ def my_lists():
 
         df = pd.read_sql(Items.query.statement, db.session.bind)
         nd_df = df[df["user_id"] == current_user.id]
-        nd_df = nd_df.drop_duplicates(subset='session_id', keep="last")
-        nd_df = nd_df.sort_values(by='session_id', ascending=False)
-        nd_df = nd_df.head().reset_index(drop=True)
-        if len(nd_df.index) >= 5:
-            for i in range(0, 4):
-                nd_df["date_created"][i] = str(nd_df["date_created"][i])[
-                    :10] + " at " + str(nd_df["date_created"][i])[11:19]
-            items = get_items(0)
-            lll = 5
-            choices = [(0, "current list"),
-                       (1, "list from the " + str(nd_df["date_created"][0])),
-                       (2, "list from the " + str(nd_df["date_created"][1])),
-                       (3, "list from the " + str(nd_df["date_created"][2])),
-                       (4, "list from the " + str(nd_df["date_created"][3]))]
-
-        elif len(nd_df.index) == 4:
-            for i in range(0, 3):
-                nd_df["date_created"][i] = str(nd_df["date_created"][i])[
-                    :10] + " at " + str(nd_df["date_created"][i])[11:19]
-            items = get_items(0)
-            lll = 4
-            choices = [(0, "current list"),
-                       (1, "list from the " + str(nd_df["date_created"][0])),
-                       (2, "list from the " + str(nd_df["date_created"][1])),
-                       (3, "list from the " + str(nd_df["date_created"][2]))]
-
-        elif len(nd_df.index) == 3:
-            for i in range(0, 2):
-                nd_df["date_created"][i] = str(nd_df["date_created"][i])[
-                    :10] + " at " + str(nd_df["date_created"][i])[11:19]
-            items = get_items(0)
-            lll = 3
-            choices = [(0, "current list"),
-                       (1, "list from the " + str(nd_df["date_created"][0])),
-                       (2, "list from the " + str(nd_df["date_created"][1]))]
-
-        elif len(nd_df.index) == 2:
-            for i in range(0, 1):
-                nd_df["date_created"][i] = str(nd_df["date_created"][i])[
-                    :10] + " at " + str(nd_df["date_created"][i])[11:19]
-            items = get_items(0)
-            lll = 2
-            choices = [(0, "current list"),
-                       (1, "list from the " + str(nd_df["date_created"][0]))]
-
-        elif len(nd_df.index) == 1:
-            items = get_items(0)
-            lll = 1
-            choices = [(0, "current list")]
-
-        form.recipe_chosen.choices = choices
-
-        if form.validate_on_submit():
-            if form.recipe_chosen.data == 0:
+        if nd_df.empty is False:
+            nd_df = nd_df.drop_duplicates(subset='session_id', keep="last")
+            nd_df = nd_df.sort_values(by='session_id', ascending=False)
+            nd_df = nd_df.head().reset_index(drop=True)
+            if len(nd_df.index) >= 5:
+                for i in range(0, 4):
+                    nd_df["date_created"][i] = str(nd_df["date_created"][i])[
+                        :10] + " at " + str(nd_df["date_created"][i])[11:19]
                 items = get_items(0)
-            else:
-                items = get_items(nd_df["session_id"][form.recipe_chosen.data - 1])
+                lll = 5
+                choices = [(0, "current list"),
+                           (1, "list from the " + str(nd_df["date_created"][0])),
+                           (2, "list from the " + str(nd_df["date_created"][1])),
+                           (3, "list from the " + str(nd_df["date_created"][2])),
+                           (4, "list from the " + str(nd_df["date_created"][3]))]
 
-        return render_template("my_lists.html", items=items, form=form,
-                               lll=lll)
+            elif len(nd_df.index) == 4:
+                for i in range(0, 3):
+                    nd_df["date_created"][i] = str(nd_df["date_created"][i])[
+                        :10] + " at " + str(nd_df["date_created"][i])[11:19]
+                items = get_items(0)
+                lll = 4
+                choices = [(0, "current list"),
+                           (1, "list from the " + str(nd_df["date_created"][0])),
+                           (2, "list from the " + str(nd_df["date_created"][1])),
+                           (3, "list from the " + str(nd_df["date_created"][2]))]
+
+            elif len(nd_df.index) == 3:
+                for i in range(0, 2):
+                    nd_df["date_created"][i] = str(nd_df["date_created"][i])[
+                        :10] + " at " + str(nd_df["date_created"][i])[11:19]
+                items = get_items(0)
+                lll = 3
+                choices = [(0, "current list"),
+                           (1, "list from the " + str(nd_df["date_created"][0])),
+                           (2, "list from the " + str(nd_df["date_created"][1]))]
+
+            elif len(nd_df.index) == 2:
+                for i in range(0, 1):
+                    nd_df["date_created"][i] = str(nd_df["date_created"][i])[
+                        :10] + " at " + str(nd_df["date_created"][i])[11:19]
+                items = get_items(0)
+                lll = 2
+                choices = [(0, "current list"),
+                           (1, "list from the " + str(nd_df["date_created"][0]))]
+
+            elif len(nd_df.index) == 1:
+                items = get_items(0)
+                lll = 1
+                choices = [(0, "current list")]
+
+            form.recipe_chosen.choices = choices
+
+            if form.validate_on_submit():
+                if form.recipe_chosen.data == 0:
+                    items = get_items(0)
+                else:
+                    items = get_items(nd_df["session_id"][form.recipe_chosen.data - 1])
+
+            return render_template("my_lists.html", items=items, form=form,
+                                   lll=lll)
+        else:
+            lll = 0
+            return render_template("my_lists.html", lll=lll)
     else:
         return redirect(url_for("login"))
 
@@ -313,13 +307,13 @@ def analytics():
         return redirect(url_for("login"))
 
 
-
 @app.route("/find-recipe", methods=["GET", "POST"])
 def findrec():
     if current_user.is_authenticated:
         # Find recipe from keyword
         form_diet = keyword()
         form2 = Trytest()
+        choices = []
         if form_diet.validate_on_submit():
             id_df = get_recipe_id(form_diet.query.data, form_diet.diet.data,
                                   form_diet.excludeIngredients.data,
@@ -335,7 +329,7 @@ def findrec():
                        (8, id_df["name"][7]),
                        (9, id_df["name"][8]),
                        (10, id_df["name"][9])]
-            return render_template("find_recipe0.html",
+            return render_template("find_recipe.html",
                                    form_diet=form_diet, form2=form2,
                                    choices=choices)
 
@@ -349,7 +343,7 @@ def findrec():
                                 len(get_recipe_info(id_df["id"][n])))
             return redirect(url_for("index"))
         return render_template("find_recipe.html",
-                               form_diet=form_diet, form2=form2)
+                               form_diet=form_diet, form2=form2, choices=choices)
     else:
         return redirect(url_for("login"))
 
@@ -408,7 +402,7 @@ def login():
 
 
 @ app.route("/logout")
-@ login_required
+@login_required
 def logout():
     logout_user()
     return redirect(url_for("login"))
@@ -508,7 +502,6 @@ def get_popular_items(num_of_items):
         filepath = save_img(img_url, "static/data/", filename)
         img_lst.append(filepath)
 
-
     data = {"item": top_n_lst,
             "path": img_lst}
     top_n_df = pd.DataFrame(data, columns=["item", "path"])
@@ -518,10 +511,10 @@ def get_popular_items(num_of_items):
 def search_img(search_query):
     access_key = "KtozeG1fDJdYwiTtQRpDr0XVaSb_NyT_mKbBQ2gI1lg"
     url = "https://api.unsplash.com/search/photos/"
-    parameter = {"client_id" : access_key,
-                 "query" : search_query.split()[0]}
+    parameter = {"client_id": access_key,
+                 "query": search_query.split()[0]}
     r = requests.get(url, params=parameter)
-    data=r.json()
+    data = r.json()
     try:
         url_raw = data["results"][0]["urls"]["small"]
         return url_raw
@@ -577,13 +570,11 @@ def get_recipe_info(idn):
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
     }
     response = requests.request("GET", url, headers=headers)
-
+    response = response.json()
     ingredients = []
     for i in range(0, len(response["extendedIngredients"])):
         ingredients.append(response["extendedIngredients"][i]["originalString"])
     return ingredients
-
-
 
 
 if __name__ == "__main__":

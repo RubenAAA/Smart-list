@@ -6,8 +6,10 @@ from wtforms.validators import DataRequired
 # from flask_wtf.file import FileField
 # from flask_wtf import Form
 
-class Test: #don't delete
+
+class Test:  # don't delete
     product_list = []
+
 
 class RegistrationForm(FlaskForm):
     fname = StringField("First Name", validators=[DataRequired()])
@@ -65,31 +67,21 @@ class keyword(Form):
         "Enter some ingredients that you do not want to be used in the recipe. Separate by a comma and a space if multiple")
     intolerances = TextAreaField(
         "Enter foods you are intolerant to. Separate by a comma and a space if multiple")
-    submit_button = SubmitField("Confirm your query and press display recipes button")
+    submit_button = SubmitField("Confirm your query")
 
 
 class user_preference(FlaskForm):
     preference = StringField("Change the amount of default items displayed")
     submit_button = SubmitField("Submit")
 
+
 class receipt_upload_adv(FlaskForm):
     receipt_picture = FileField("Upload your receipt",
-                                            validators=[DataRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
+                                validators=[DataRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
     submit_button = SubmitField("Upload")
+
 
 class Select_element(Form):
     element_chosen = SelectField(
         'Choose the first product bought', validate_choice=False, choices=[("Place"), ("Holder")], validators=[DataRequired()])
     submit_button = SubmitField('Confirm')
-"""
-Advanced functionalities
-
-
-
-
-
-
-class food_upload(Form):
-    food_picture = FileField("Upload a picture of your food")
-    submit_button = SubmitField("Submit")
-"""
