@@ -22,9 +22,10 @@
                     <li><a href="upload-receipt">Upload receipt</a>
                     <li><a href="#">Analytics</a>
                     <li style="float:right"><a href="logout">Logout</a>
-                    <li style="float:right"><a href "my-profile">My Profile</a>
+                    <li style="float:right"><a href ="#">My Profile</a>
                 {% else %}
                     <li><a class="active" href="#">Home</a>
+                    <li><a href="#">New Post</a>
                     <li style="float:right"><a href="login">Login</a>
                     <li style="float:right"><a href="registration">Registration</a>
                 {% endif %}
@@ -32,8 +33,7 @@
         </div><br>
 
 <h3>Find Recipe</h3>
-<<<<<<< HEAD
-<h6>Don't know what you need? Here is an easy way to find the ingredients of your favored recipe</h6>
+<h6>At this page you can find any recipe you want</h6>
 
 <script type="text/javascript">
         function toggle_display(){
@@ -49,10 +49,6 @@
           }
         }
 </script>
-=======
-<h6>Don't know what you need? Here is a easy way to find the ingredients of your favored recipe</h6><br>
-{% if choices == [] %}
->>>>>>> 91c02c9136bb6b47a67984b410ae1441b6951ae4
 <form  method="post"  class="formscss">
   {{ form_diet.hidden_tag() }}
 
@@ -62,7 +58,7 @@
                 <div id="find_recipe-column" class="col-md-6">
                     <div id="find_recipe-box" class="col-md-12">
                         <form id="find_recipe-form" class="form" action="" method="post">
-                            <h3 class="text-center text-info"></h3>
+                            <h3 class="text-center text-info">Find recipe</h3>
                             <div class="form-group">
                                 <label for="username" class="text-info">{{ form_diet.query.label }}</label><br>
                                 {{ form_diet.query() }}
@@ -83,41 +79,44 @@
                                 {{ form_diet.submit_button() }}
                             </div>
                         </form>
+                    </form>
                   </div>
-              </div>
-          </div>
-      </div>
-  </div>
-</form>
-{% endif %}
+              </form><br><br>
 
-    <br><br>
-    {% if choices != [] %}
-    <h6 class="text-info">Type the number that is next to the recipe you want to add to your shopping list.</h6>
-    <br>
-    <br>
-      <form method="post">
-        {{ form2.hidden_tag() }}
+                  <p>If you want to see your results type here<p>
+                      <button onclick="toggle_display()">Display recipes</button>
+                    <div class="content2_section", style="display: none;">
+                    <br><br>
+                      <form method="post">
+                        {{ form2.hidden_tag() }}
 
-        {% for i in range(0, 10) %}
-        Recipe number {{ i + 1 }} :
-        {{ choices[i][1] }}
-        {{ choices[i][2] }}
-        <br>
-        <br>
-         {% endfor %}
-        <br>
-        {{ form2.number() }}
-        {{ form2.submit_button() }}
+                        {% for i in range(0, 10) %}
+                        Recipe number {{ i + 1 }} :
+                        {{ choices[i][1] }}
+                        {{ choices[i][2] }}
+                        <br>
+                        <br>
+                          {% endfor %}
+                        <br>
+                        {{ form2.number() }}
+                        {{ form2.submit_button() }}
 
-    </form><br><br>
-    {% endif %}
+                    </form><br><br>
+                    </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 
-      <div class="footer">
-          <h6>Copyright 2020</h6>
-      </div>
 
+
+
+<div class="footer">
+    <h6>Copyright 2020</h6>
+</div>
   </body>
 </html>

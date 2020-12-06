@@ -39,6 +39,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100), nullable=False)
     items = db.relationship("Items", backref="opp", lazy=True)
     num_of_items = db.Column(db.Integer, default=5)
+    profile_picture = db.Column(db.String(100), default="default")
 
     def __repr__(self):
         return f"User(id: '{self.id}', fname: '{self.fname}', " +\
@@ -60,6 +61,7 @@ class Items(db.Model, UserMixin):
                f" date_created: '{self.date_created}', " +\
                f" user_id: '{self.user_id}')"
 
+db.create_all()
 
 ###########
 # routes
@@ -73,10 +75,10 @@ def index():
         current_id = current_user.id
         my_user = User.query.filter_by(id=current_id).first()
         items = get_items(0)
-        try:
-            popular = get_popular_items(my_user.num_of_items)
-        except:
-            popular = pd.DataFrame(columns=["item", "path"])
+        popular = get_popular_items(my_user.num_of_items)
+        #try:
+        #except:
+    #       popular = pd.DataFrame(columns=["item", "path"])
         form = button_for_script()
         form1 = button1_for_script()
 
@@ -343,23 +345,54 @@ def findrec():
 
 @app.route("/my-profile", methods=["GET", "POST"])
 def my_profile():
-    name, username, email = get_name()
-    form = user_preference()
-    if form.validate_on_submit():
-        pref = form.preference.data
+    if current_user.is_authenticated:
+        name, username, email = get_name()
+        form = user_preference()
+        form_img = pimage()
 
-        current_id = current_user.id
-        my_user = User.query.filter_by(id=current_id).first()
 
-        my_user.num_of_items = pref
+        if form.validate_on_submit():
+            pref = form.preference.data
 
-        db.session.commit()
-        return redirect(url_for("index"))
-    return render_template("my_profile.html",
-                           name=name,
-                           username=username,
-                           email=email,
-                           form=form)
+            current_id = current_user.id
+            my_user = User.query.filter_by(id=current_id).first()
+
+            my_user.num_of_items = pref
+
+            db.session.commit()
+            return redirect(url_for("index"))
+
+        if form_img.validate_on_submit():
+            form_img = form.pimage.data
+
+            current_id = current_user.id
+            my_user = User.query.filter_by(id=current_id).first()
+
+            file_path = "static/profile_pic/indivdual.jpg"
+            with open(file_path, "wb") as file:
+                file.write(form_img.content)
+
+            my_user.profile_picture = file_path
+            db.session.commit()
+
+            return render_template("my_profile,html",
+                                    name=name,
+                                    username=username,
+                                    email=email,
+                                    form=form,
+                                    form_img=form_img,
+                                    User=User)
+
+
+        return render_template("my_profile.html",
+                               name=name,
+                               username=username,
+                               email=email,
+                               form=form,
+                               form_img=form_img,
+                               User=User)
+    else:
+        return redirect(url_for("login"))
 
 
 @ app.route("/register", methods=["GET", "POST"])
@@ -377,6 +410,7 @@ def register():
 
 @ app.route("/login", methods=["GET", "POST"])
 def login():
+    user_id=2
     if current_user.is_authenticated:
         return redirect(url_for("index"))
     form = LoginForm()
@@ -491,7 +525,11 @@ def get_popular_items(num_of_items):
     img_lst = []
     for i in top_n_lst:
         img_url = search_img(i)
-        filename = i + ".jpg"
+        forbidden = [ '&', ";", "*", "?", "-"]
+        for a in forbidden:
+            if a in i:
+                i = "Bad_name"
+        filename = i.split()[0] + ".jpg"
         filepath = save_img(img_url, "static/data/", filename)
         img_lst.append(filepath)
 
@@ -512,8 +550,8 @@ def search_img(search_query):
         url_raw = data["results"][0]["urls"]["small"]
         return url_raw
     except:
-        return "https://thumbs.dreamstime.com/b/no-image-available-icon-photo-camera-flat-vector-illustration-132483296.jpg"
-
+        default_url = "https://thumbs.dreamstime.com/b/no-image-available-icon-photo-camera-flat-vector-illustration-132483296.jpg"
+        return default_url
 
 def save_img(img_url, folder_prefix, filename):
     img = requests.get(img_url)
