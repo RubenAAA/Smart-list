@@ -108,7 +108,7 @@ def manual_receipt():
             flash("This might take a few seconds")
             # get picture
             if platform == "linux" or platform == "linux2":
-                assets_dirl = "/home/joel_treichler28/Smart-list/static/"  # yes it's ugly and not good practice
+                assets_dirl = "/home/joel_treichler28/Smart-list/static/"  # Added that so I don't have to change it manually on the server. yes it's ugly and not good practice
             else:
                 assets_dirl = "static/"
             filenamel = form2.receipt_picture.name + ".jpg"
