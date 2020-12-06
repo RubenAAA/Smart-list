@@ -82,18 +82,13 @@ def index():
 
         if form.validate_on_submit():
             add_item(form)
-            # items = get_items()
+
             return redirect(url_for("index"))
-            # return render_template("index.html", form=form, form1=form1,
-            #                         items=items, popular=popular)
 
         if form1.validate_on_submit():
             attribute_session_id()
-            # items = get_items()
-            # popular = get_popular_items(5)
+
             return redirect(url_for("index"))
-            # return render_template("index.html", form=form, form1=form1,
-            #                         items=items, popular=popular)
 
         return render_template("index.html", form=form,
                                form1=form1, items=items, popular=popular)
@@ -571,7 +566,9 @@ def get_recipe_info(idn):
     response = response.json()
     ingredients = []
     for i in range(0, len(response["extendedIngredients"])):
-        ingredients.append(response["extendedIngredients"][i]["originalString"])
+        string_w_comments = response["extendedIngredients"][i]["originalString"]
+        stripped = string_w_comments.split(" (", 1)[0]
+        ingredients.append(stripped)
     return ingredients
 
 
