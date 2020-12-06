@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm, Form
-from wtforms import StringField, SubmitField, PasswordField, SelectField, TextAreaField, IntegerField
+from wtforms import StringField, SubmitField, PasswordField,\
+    SelectField, TextAreaField, IntegerField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired
 # We need the following two for the file upload forms:

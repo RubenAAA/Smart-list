@@ -596,7 +596,8 @@ def get_recipe_id(query, diet, excludeIngredients, intolerances, number):
 
 def get_recipe_info(idn):
     idn = str(idn)
-    url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/" + idn + "/information"
+    url = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/"  \
+        + idn + "/information"
     headers = {
         'x-rapidapi-key': APIKEY,
         'x-rapidapi-host': "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com"
