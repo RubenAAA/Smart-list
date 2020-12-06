@@ -1,7 +1,7 @@
-from api_keys import APIKEY
+#from api_keys import APIKEY
 from forms import Select_recipe, receipt_upload_adv, Select_element, Test
 from forms import button_for_script, button1_for_script, keyword, Trytest
-from forms import RegistrationForm, LoginForm, user_preference
+from forms import RegistrationForm, LoginForm, user_preference, pimage
 from flask_login import logout_user, login_required
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_bcrypt import Bcrypt
@@ -377,7 +377,8 @@ def my_profile():
             with open(file_path, "wb") as file:
                 file.write(form_img.content)
 
-            my_user.profile_picture = file_path
+            image = User(profile_picture="individual")
+            db.session.add(image)
             db.session.commit()
 
             return render_template("my_profile,html",
@@ -529,11 +530,12 @@ def get_popular_items(num_of_items):
     top_n_lst = current_df['item'].value_counts()[:num_of_items].index.tolist()
     img_lst = []
     for i in top_n_lst:
+        i = i.replace("-", "_").replace("/", "_").replace("&", "_").replace(":", "_")\
+             .replace("#", "_").replace("%", "_").replace("!", "_").replace("?", "_")
+        #for a in i:
         img_url = search_img(i)
-        forbidden = [ '&', ";", "*", "?", "-"]
-        for a in forbidden:
-            if a in i:
-                i = "Bad_name"
+        #forbidden = [ '&', ";", "*", "?", "-"]
+        #for a in forbidden:
         filename = i.split()[0] + ".jpg"
         filepath = save_img(img_url, "static/data/", filename)
         img_lst.append(filepath)
