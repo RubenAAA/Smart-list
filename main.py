@@ -542,10 +542,9 @@ def get_popular_items(num_of_items):
 
 
 def search_img(search_query):
-    access_key = "KtozeG1fDJdYwiTtQRpDr0XVaSb_NyT_mKbBQ2gI1lg"
     url = "https://api.unsplash.com/search/photos/"
     parameter = {"client_id": access_key,
-                 "query": search_query.split()[0]}
+                 "query": search_query}
     r = requests.get(url, params=parameter)
     data = r.json()
     try:
