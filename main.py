@@ -346,7 +346,6 @@ def my_profile():
     if current_user.is_authenticated:
         name, username, email = get_name()
         form = user_preference()
-        form_img = pimage()
         if form.validate_on_submit():
 
             pref = form.preference.data
@@ -364,9 +363,7 @@ def my_profile():
                                name=name,
                                username=username,
                                email=email,
-                               form=form,
-                               form_img=form_img,
-                               User=User)
+                               form=form)
     else:
         return redirect(url_for("login"))
 
