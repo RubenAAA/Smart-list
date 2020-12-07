@@ -186,12 +186,13 @@ def manual_receipt():
             iterator = int(form3.element_chosen.data)
             print(liste_product)
             # add to DB
-
+            last_sid = Items.query.order_by(Items.session_id.desc()).first().session_id+1
             for li in liste_product[iterator:]:  # iterates starting with element chosen
                 print(li)
                 product = Items(item=li,  # add to  list
                                 date_created=datetime.datetime.now(),
-                                user_id=current_user.id)
+                                user_id=current_user.id,
+                                session_id=last_sid)
                 db.session.add(product)
 
             # commit
@@ -524,7 +525,7 @@ def get_popular_items(num_of_items):
     for item in current_df['item']:
         item = item.upper()
     top_n_lst = current_df['item'].value_counts()[:num_of_items].index.tolist()
-    
+
     img_lst = []
     for i in top_n_lst:
         i = i.replace("!", "_").replace("?", "_").replace("-", "_").replace("/", "_")\
