@@ -41,6 +41,13 @@ After you are finished with the Shopping List click the _save list_ button at th
 
 ![Homepage Screenshot](https://i.ibb.co/fxNKX2h/Index-screenshot.png)
 
+1. The Navbar - access the different Features
+2. Profile Management - Change your preferences, log in and out
+3. Add new items to your current list
+4. Your most frequently bought Items
+5. Your current shopping list
+6. Save List, press this button after you are finished with your current list
+
 
 ## Challenges and Issues:
 During our work process, we encountered numerous issues relating to the scope of the features and also to how we could effectively collaborate online.
