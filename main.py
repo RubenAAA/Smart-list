@@ -1,7 +1,7 @@
 from api_keys import *
 from forms import Select_recipe, receipt_upload_adv, Select_element, Test
 from forms import button_for_script, button1_for_script, keyword, Trytest
-from forms import RegistrationForm, LoginForm, user_preference, pimage
+from forms import RegistrationForm, LoginForm, user_preference
 from flask_login import logout_user, login_required
 from flask_login import LoginManager, UserMixin, login_user, current_user
 from flask_bcrypt import Bcrypt
