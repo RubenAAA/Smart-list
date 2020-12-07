@@ -31,10 +31,10 @@
             </ul>
         </div><br>
 
-<h3>Find Recipe</h3>
+<br><h3>Find Recipe</h3><br>
 
-<h6>Don't know what you need? Here is a easy way to find the ingredients of your favored recipe</h6><br>
 {% if choices == [] %}
+<h6>Don't know what you need? Here is a easy way to find the ingredients of your favored recipe</h6><br>
 <form  method="post"  class="formscss">
   {{ form_diet.hidden_tag() }}
 
@@ -46,19 +46,19 @@
                         <form id="find_recipe-form" class="form" action="" method="post">
                             <h3 class="text-center text-info"></h3>
                             <div class="form-group">
-                                <label for="username" class="text-info">{{ form_diet.query.label }}</label><br>
+                                <label for="username" class="text-info"><p>{{ form_diet.query.label }}</p></label><br>
                                 {{ form_diet.query() }}
-                            </div>
+                            </div><br>
                             <div class="form-group">
-                                <label for="password" class="text-info">{{ form_diet.diet.label }}</label><br>
+                                <label for="password" class="text-info"><p>{{ form_diet.diet.label }}</p></label><br>
                                 {{ form_diet.diet() }}
-                            </div>
+                            </div><br>
                             <div class="form-group">
-                                <label for="password" class="text-info">{{ form_diet.excludeIngredients.label }}</label><br>
+                                <label for="password" class="text-info"><p>{{ form_diet.excludeIngredients.label }}</p></label><br>
                                 {{ form_diet.excludeIngredients() }}
-                            </div>
+                            </div><br>
                             <div class="form-group">
-                                <label for="password" class="text-info">{{ form_diet.intolerances.label }}</label><br>
+                                <label for="password" class="text-info"><p>{{ form_diet.intolerances.label }}</p></label><br>
                                 {{ form_diet.intolerances() }}
                             </div><br>
                             <div class="form-group">
@@ -73,18 +73,20 @@
 </form>
 {% endif %}
 
-    <br><br>
-    {% if choices != [] %}
-    <h6 class="text-info">Type the number that is next to the recipe you want to add to your shopping list.</h6>
     <br>
+    {% if choices != [] %}
+    <h5 class="special-card">Type the number that belongs to the recipe you want to add the ingredients to your shopping list.</h5>
     <br>
       <form method="post">
         {{ form2.hidden_tag() }}
 
         {% for i in range(0, 10) %}
+        <div class="text-info"><br>
         Recipe number {{ i + 1 }} :
+    </div class="text-info">
         {{ choices[i][1] }}
         {{ choices[i][2] }}
+
         <br>
         <br>
          {% endfor %}
