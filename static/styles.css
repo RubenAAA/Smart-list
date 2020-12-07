@@ -20,9 +20,6 @@ p {
     color:darkslategray;
     font-size: 15px;
 }
-.text-info {
-    text-color: black;
-}
 .footer {
   left: 0;
   bottom: 0;
@@ -55,6 +52,7 @@ p {
   background-color: #f2f2f2;
   text-align: center;
 }
+/* find recipe special card */
 .special-card {
     height: 95px;
     padding-top: 20px;

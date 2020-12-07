@@ -77,11 +77,6 @@ class user_preference(FlaskForm):
     submit_button = SubmitField("Submit")
 
 
-class pimage(Form):
-    pimage = FileField("Profile Picture", validators=[DataRequired()])
-    submit_button = SubmitField("Submit")
-
-
 class receipt_upload_adv(FlaskForm):
     receipt_picture = FileField("Upload your receipt",
                                 validators=[DataRequired(),
