@@ -40,7 +40,6 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100), nullable=False)
     items = db.relationship("Items", backref="opp", lazy=True)
     num_of_items = db.Column(db.Integer, default=5)
-    profile_picture = db.Column(db.String(100), default="default")
 
     def __repr__(self):
         return f"User(id: '{self.id}', fname: '{self.fname}', " +\
@@ -348,6 +347,7 @@ def my_profile():
         form = user_preference()
         form_img = pimage()
         if form.validate_on_submit():
+
             pref = form.preference.data
 
             current_id = current_user.id
@@ -358,31 +358,6 @@ def my_profile():
             db.session.commit()
             return redirect(url_for("index"))
 
-        if form_img.validate_on_submit():
-            form_img = form.pimage.data
-
-            current_id = current_user.id
-            my_user = User.query.filter_by(id=current_id).first()
-            if platform == "linux" or platform == "linux2":  # linux
-                # yes I know it's not the good way
-                file_path = "/home/joel_treichler28/Smart-list/static/profile_pic/indivdual.jpg"
-
-            else:
-                file_path = "static/profile_pic/indivdual.jpg"
-            with open(file_path, "wb") as file:
-                file.write(form_img.content)
-
-            my_user.profile_picture = file_path
-
-            db.session.commit()
-
-            return render_template("my_profile,html",
-                                   name=name,
-                                   username=username,
-                                   email=email,
-                                   form=form,
-                                   form_img=form_img,
-                                   User=User)
 
         return render_template("my_profile.html",
                                name=name,
@@ -524,7 +499,7 @@ def get_popular_items(num_of_items):
     for item in current_df['item']:
         item = item.upper()
     top_n_lst = current_df['item'].value_counts()[:num_of_items].index.tolist()
-    
+
     img_lst = []
     for i in top_n_lst:
         i = i.replace("!", "_").replace("?", "_").replace("-", "_").replace("/", "_")\
@@ -565,6 +540,7 @@ def save_img(img_url, folder_prefix, filename):
     with open(file_path, "wb") as file:
         file.write(img.content)
     return file_path
+
 
 
 def attribute_session_id():

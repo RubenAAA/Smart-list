@@ -33,11 +33,8 @@
         </div><br><br>
 <h2>Profile of {{name}} </h2><br>
 
-{% if User.profile_picture == "default" %}
-    <img src="static/profile_pic/individual.jpg" height="60">
-{% else %}
-    <img src="static/profile_pic/default_pic.jpg" height="60">
-{% endif %}
+<img src="static/profile_pic/default_pic.jpg" height="60">
+
 
 <br><br><br><h5>Your current username: {{username}}<h5><br>
 <h5>Your current email address: {{email}}<h5><br><br>

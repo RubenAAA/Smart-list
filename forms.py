@@ -77,7 +77,7 @@ class user_preference(FlaskForm):
     submit_button = SubmitField("Submit")
 
 
-class pimage(FlaskForm):
+class pimage(Form):
     pimage = FileField("Profile Picture", validators=[DataRequired()])
     submit_button = SubmitField("Submit")
 
