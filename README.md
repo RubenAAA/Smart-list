@@ -39,7 +39,7 @@ The items you wish to put onto your list are added one by one under the _add a p
 
 After you are finished with the Shopping List click the _save list_ button at the bottom of the page. From now on your most frequently bought items will be displayed under the _the items you most often buy_ subheader. You can adapt the amount of items displayed in this way on the _my profile_ page, accessible through the navbar. On the Navbar you will also find _upload receipt_. Through this functionality you can upload past shopping receipts to improve the items it will suggest to you in the future!
 
-![alt text](https://ibb.co/cr8py1G)
+![Homepage Screenshot](https://i.ibb.co/fxNKX2h/Index-screenshot.png)
 
 
 ## Challenges and Issues:
