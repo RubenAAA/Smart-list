@@ -185,12 +185,13 @@ def manual_receipt():
             iterator = int(form3.element_chosen.data)
             print(liste_product)
             # add to DB
-
+            last_sid = Items.query.order_by(Items.session_id.desc()).first().session_id+1
             for li in liste_product[iterator:]:  # iterates starting with element chosen
                 print(li)
                 product = Items(item=li,  # add to  list
                                 date_created=datetime.datetime.now(),
-                                user_id=current_user.id)
+                                user_id=current_user.id,
+                                session_id=last_sid)
                 db.session.add(product)
 
             # commit

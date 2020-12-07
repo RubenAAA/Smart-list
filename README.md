@@ -33,16 +33,20 @@ To Launch the application on your machine, you need to run the startup.py first 
 Smartlist provides you with everything you need to write, modify and view shopping lists. Additionally, SmartList provides you with a list of your most frequently bought items, functionalities to add items based on recipes and a basic analytics page.
 
 ### Navigating the Main Page
-
-
-
 To make use of these features, you first of all need to make an account by clicking on the _register_ button found in the Navbar. After the registration and login, head to the main page to make your first SmartList!
 
 The items you wish to put onto your list are added one by one under the _add a product to your Shoppinglist_ subheader. To add the product to the list simply click the _submit_ button.
 
 After you are finished with the Shopping List click the _save list_ button at the bottom of the page. From now on your most frequently bought items will be displayed under the _the items you most often buy_ subheader. You can adapt the amount of items displayed in this way on the _my profile_ page, accessible through the navbar. On the Navbar you will also find _upload receipt_. Through this functionality you can upload past shopping receipts to improve the items it will suggest to you in the future!
 
+![Homepage Screenshot](https://i.ibb.co/fxNKX2h/Index-screenshot.png)
 
+1. The Navbar - access the different Features
+2. Profile Management - Change your preferences, log in and out
+3. Add new items to your current list
+4. Your most frequently bought Items
+5. Your current shopping list
+6. Save List, press this button after you are finished with your current list
 
 
 ## Challenges and Issues:
