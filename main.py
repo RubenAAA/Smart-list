@@ -125,7 +125,7 @@ def manual_receipt():
 
             # API Call
             payload = {'isOverlayRequired': "false",
-                       'apikey': "498f0b56fb88957",
+                       'apikey': OCR_KEY,
                        'language': "ger",
                        "isTable": "True",
                        "detectOrientation": "true",
@@ -524,6 +524,7 @@ def get_popular_items(num_of_items):
     for item in current_df['item']:
         item = item.upper()
     top_n_lst = current_df['item'].value_counts()[:num_of_items].index.tolist()
+    
     img_lst = []
     for i in top_n_lst:
         i = i.replace("!", "_").replace("?", "_").replace("-", "_").replace("/", "_")\
@@ -532,10 +533,7 @@ def get_popular_items(num_of_items):
         img_url = search_img(i)
         filename = i.split()[0] + ".jpg"
         filepath = save_img(img_url, "static/data/", filename)
-        if platform == "linux" or platform == "linux2":
-            filepath = save_img(img_url, "/home/joel_treichler28/Smart-list/static/data/", filename)
-        else:
-            filepath = save_img(img_url, "static/data/", filename)
+
         img_lst.append(filepath)
 
     data = {"item": top_n_lst,
@@ -560,7 +558,10 @@ def search_img(search_query):
 
 def save_img(img_url, folder_prefix, filename):
     img = requests.get(img_url)
-    file_path = os.path.join(folder_prefix, filename)
+    if platform == "linux" or platform == "linux2":
+        file_path = folder_prefix + filename
+    else:
+        file_path = os.path.join(folder_prefix, filename)
     with open(file_path, "wb") as file:
         file.write(img.content)
     return file_path
