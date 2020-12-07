@@ -22,6 +22,9 @@ For the additional features, we tried to experiment with some of the functionali
 
 The "Scan Receipt" utilises an OCR API to upload past shopping lists to the users database. In this way, the user's suggested items can be optimised without the hassle of typing in each item individually.
 
+_Code excerpt of the Scan Receipt Functionality_
+![Homepage Screenshot](https://i.ibb.co/PwFP5FJ/Code-Example.jpg)
+
 While the "Scan Receipt" function is meant to improve the items suggested to an user in a convenient way, the "find recipe" feature is meant to make finding the desired ingredients for a recipe easier and directly integrated into the process of making shopping lists. It asks the user about what he wants to cook, as well as dietary preferences and allergies amongst others. Making use of an API it then returns a list of ingredients which can be directly added to the current shopping list.
 
 Furthermore, the analytics page provides the user with a comprehensive overview of their buying behaviour at a quick glance. It includes information about the composition of items bought amongst others.
